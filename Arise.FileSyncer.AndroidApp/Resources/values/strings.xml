@@ -1,0 +1,58 @@
+<resources>
+  <string name="app_name">Arise File Syncer</string>
+
+  <string name="act_main">Arise File Syncer</string>
+  <string name="act_profile_new">Create Sync Profile</string>
+  <string name="act_profile_edit">Edit Sync Profile</string>
+  <string name="act_profile_received">Received Sync Profile</string>
+  <string name="act_profile_details">Sync Profile Details</string>
+
+  <string name="navigation_drawer_open">Open navigation drawer</string>
+  <string name="navigation_drawer_close">Close navigation drawer</string>
+
+  <string name="action_settings">Settings</string>
+  <string name="action_done">Done</string>
+  <string name="action_edit">Edit</string>
+  <string name="action_delete">Delete</string>
+  <string name="action_share">Share</string>
+
+  <string name="nav_item_profiles">Profiles</string>
+  <string name="nav_item_connections">Connections</string>
+  <string name="nav_item_settings">Settings</string>
+
+  <string name="notification_title">Syncing files...</string>
+  <string name="notification_text">{0}KB remaining</string>
+
+  <string name="msg_pairing_enabled">Pairing has been enabled</string>
+  <string name="msg_pairing_disabled">Pairing has been disabled</string>
+  <string name="msg_profile_created">Sync profile has been successfully created</string>
+  <string name="msg_profile_accepted">Sync profile has been successfully accepted</string>
+  <string name="msg_profile_updated">Sync profile has been successfully updated</string>
+
+  <string name="dialog_btn_cancel">Cancel</string>
+  <string name="dialog_btn_delete">Delete</string>
+  <string name="dialog_profile_delete_title">Delete profile</string>
+  <string name="dialog_profile_delete_message">Are you sure you want to delete this profile?</string>
+
+  <string name="ui_pnew_name">Name</string>
+  <string name="ui_pnew_directory">Directory</string>
+  <string name="ui_pnew_allow_send">Allow Send</string>
+  <string name="ui_pnew_allow_receive">Allow Receive</string>
+  <string name="ui_pnew_allow_delete">Allow Delete</string>
+  <string name="ui_pnew_skip_hidden">Skip hidden files</string>
+
+  <string name="settings_group_connection">Connection</string>
+  <string name="settings_title_port">Network port</string>
+
+  <string name="error_unknown">Unknown error</string>
+  <string name="error_service_unavailable">Service is unavailable</string>
+  <string name="error_service_profile_add_failed">Failed to add profile</string>
+  <string name="error_service_profile_update_failed">Failed to update profile</string>
+  <string name="error_pnew_name_empty">Cannot be emtpy</string>
+  <string name="error_pnew_directory_empty">Select a directory</string>
+  <string name="error_pnew_directory_not_exist">Directory does not exist</string>
+  <string name="error_pnew_no_sync_type">Have to either send or receive files</string>
+  <string name="error_prec_arg_parse">Data retrive error</string>
+  <string name="error_profile_id_retrive">Failed to retrive profile ID</string>
+  <string name="error_profile_details_retrive">Failed to retrive profile details</string>
+</resources>

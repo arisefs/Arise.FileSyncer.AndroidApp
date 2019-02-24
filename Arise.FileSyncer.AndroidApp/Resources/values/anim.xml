@@ -1,0 +1,6 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<resources>
+  <integer name="anim_slide_length">300</integer>
+  <integer name="anim_slide_side_length">275</integer>
+  <integer name="anim_slide_bottom_length">325</integer>
+</resources>

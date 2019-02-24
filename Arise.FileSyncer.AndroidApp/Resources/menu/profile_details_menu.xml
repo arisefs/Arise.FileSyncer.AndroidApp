@@ -1,0 +1,19 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+      xmlns:local="http://schemas.android.com/apk/res-auto">
+  <item
+       android:id="@+id/profile_share"
+       android:icon="@drawable/baseline_share_white_24"
+       android:title="@string/action_share"
+       local:showAsAction="always" />
+  <item
+       android:id="@+id/profile_edit"
+       android:icon="@drawable/baseline_edit_white_24"
+       android:title="@string/action_edit"
+       local:showAsAction="ifRoom" />
+  <item
+       android:id="@+id/profile_delete"
+       android:icon="@drawable/baseline_delete_white_24"
+       android:title="@string/action_delete"
+       local:showAsAction="ifRoom" />
+</menu>

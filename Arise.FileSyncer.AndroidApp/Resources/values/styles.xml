@@ -1,0 +1,52 @@
+<resources>
+
+  <style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar">
+    <item name="colorPrimary">@color/primary</item>
+    <item name="colorPrimaryDark">@color/primaryDark</item>
+    <item name="colorAccent">@color/secondary</item>
+
+    <item name="android:textAppearanceLarge">@style/TextAppearance.Large</item>
+    <item name="android:textAppearanceMedium">@style/TextAppearance.Medium</item>
+    <item name="android:textAppearanceSmall">@style/TextAppearance.Small</item>
+  </style>
+
+  <style name="AppTheme.NoActionBar">
+    <item name="windowActionBar">false</item>
+    <item name="windowNoTitle">true</item>
+  </style>
+
+  <style name="AppTheme.Splash">
+    <item name="android:windowBackground">@drawable/splash_screen</item>
+    <item name="android:windowNoTitle">true</item>
+    <item name="windowNoTitle">true</item>
+  </style>
+
+  <style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
+
+  <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
+
+  <style name="TextAppearance.Large" parent="TextAppearance.AppCompat.Large">
+    <item name="android:textColor">@color/primary_text</item>
+  </style>
+  <style name="TextAppearance.Medium" parent="TextAppearance.AppCompat.Medium">
+    <item name="android:textColor">@color/secondary_text</item>
+  </style>
+  <style name="TextAppearance.Small" parent="TextAppearance.AppCompat.Small">
+    <item name="android:textColor">@color/secondary_text</item>
+  </style>
+
+  <style name="TextAppearance.Settings.Header" parent="TextAppearance.AppCompat">
+    <item name="android:textColor">@color/secondary</item>
+    <item name="android:textSize">16sp</item>
+    <item name="android:textStyle">bold</item>
+  </style>
+  <style name="TextAppearance.Settings.Title" parent="TextAppearance.AppCompat">
+    <item name="android:textColor">@color/primary_text</item>
+    <item name="android:textSize">18sp</item>
+  </style>
+  <style name="TextAppearance.Settings.Description" parent="TextAppearance.AppCompat">
+    <item name="android:textColor">@color/secondary_text</item>
+    <item name="android:textSize">16sp</item>
+  </style>
+
+</resources>

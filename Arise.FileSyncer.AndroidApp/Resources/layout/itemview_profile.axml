@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:padding="16dp"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="?android:attr/selectableItemBackground">
+    <ImageView
+        android:src="@drawable/baseline_error_outline_white_24"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/profile_error"
+        android:tint="@color/icon_red"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentTop="true"
+        android:visibility="gone" />
+    <ImageView
+        android:src="@drawable/baseline_vertical_align_center_white_24"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/profile_type"
+        android:tint="@color/icon_dark_inactive"
+        android:layout_alignParentRight="true"
+        android:layout_below ="@id/profile_error"
+        android:visibility="visible" />
+    <TextView
+        android:text="- Profile Name -"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/profile_name"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentLeft="true"
+        android:layout_toLeftOf="@id/profile_type" />
+    <TextView
+        android:text="- Last sync date -"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/profile_lastsync"
+        android:layout_below="@id/profile_name"
+        android:layout_alignParentLeft="true"
+        android:layout_toLeftOf="@id/profile_type" />
+    <TextView
+        android:text="- Root directory -"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/profile_root"
+        android:layout_alignParentLeft="true"
+        android:layout_below="@id/profile_lastsync" />
+</RelativeLayout>
