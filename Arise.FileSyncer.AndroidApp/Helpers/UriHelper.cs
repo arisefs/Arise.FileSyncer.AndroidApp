@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using Android.Content;
 using Uri = Android.Net.Uri;
 

@@ -14,11 +14,14 @@ namespace Arise.FileSyncer.AndroidApp.Activities
     [Activity(Label = "@string/act_profile_received", Theme = "@style/AppTheme.NoActionBar")]
     public class ProfileReceivedActivity : ProfileEditorActivity
     {
+        private Args args;
+
         protected override void OnCreate(Bundle savedInstanceState)
         {
             base.OnCreate(savedInstanceState);
 
-            var args = GetArgsFromJson();
+            args = Args.FromJson(Intent.GetStringExtra(Constants.Keys.ProfileReceivedArgsJson));
+
             if (args != null)
             {
                 editName.Text = args.Name;
@@ -35,7 +38,6 @@ namespace Arise.FileSyncer.AndroidApp.Activities
 
         protected override void OnEditDone()
         {
-            var args = GetArgsFromJson();
             if (args == null)
             {
                 OnError(Resource.String.error_prec_arg_parse);
@@ -82,24 +84,6 @@ namespace Arise.FileSyncer.AndroidApp.Activities
             }
         }
 
-        private Args GetArgsFromJson()
-        {
-            string argsJson = Intent.GetStringExtra(Constants.Keys.ProfileReceivedArgsJson);
-            if (argsJson != null)
-            {
-                try
-                {
-                    return Json.Deserialize<Args>(argsJson);
-                }
-                catch (Exception ex)
-                {
-                    Android.Util.Log.Error(Constants.TAG, $"{this}: {ex.Message}");
-                }
-            }
-
-            return null;
-        }
-
         public class Args
         {
             public Guid RemoteId { get; }
@@ -121,6 +105,23 @@ namespace Arise.FileSyncer.AndroidApp.Activities
                 Name = args.Name;
                 CreationDate = args.CreationDate;
                 SkipHidden = args.SkipHidden;
+            }
+
+            public static Args FromJson(string json)
+            {
+                if (json != null)
+                {
+                    try
+                    {
+                        return Json.Deserialize<Args>(json);
+                    }
+                    catch (Exception ex)
+                    {
+                        Android.Util.Log.Error(Constants.TAG, $"{this}: {ex.Message}");
+                    }
+                }
+
+                return null;
             }
         }
     }
