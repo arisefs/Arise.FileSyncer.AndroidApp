@@ -170,7 +170,15 @@ namespace Arise.FileSyncer.AndroidApp.Activities
         private void SelectDirectry()
         {
             dirClicked = true;
-            StartActivityForResult(new Intent(Intent.ActionOpenDocumentTree), DirectorySelectRC);
+
+            Intent directorySelectIntent = new Intent(Intent.ActionOpenDocumentTree);
+            directorySelectIntent.SetFlags(
+                ActivityFlags.GrantReadUriPermission |
+                ActivityFlags.GrantWriteUriPermission |
+                ActivityFlags.GrantPersistableUriPermission |
+                ActivityFlags.GrantPrefixUriPermission);
+
+            StartActivityForResult(directorySelectIntent, DirectorySelectRC);
         }
 
         private bool CheckValues()

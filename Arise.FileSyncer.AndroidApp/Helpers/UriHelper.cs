@@ -17,7 +17,10 @@ namespace Arise.FileSyncer.AndroidApp.Helpers
         {
             ActivityFlags flags = ActivityFlags.GrantReadUriPermission;
             if (isReceive) flags |= ActivityFlags.GrantWriteUriPermission;
-            context.ContentResolver.TakePersistableUriPermission(uri, flags);
+
+            try { context.ContentResolver.TakePersistableUriPermission(uri, flags); }
+            catch (Exception ex) { Android.Util.Log.Error(Constants.TAG, ex.Message); }
+
             AppPrefs.SaveUri(context, key.ToString(), uri);
         }
 
@@ -33,7 +36,9 @@ namespace Arise.FileSyncer.AndroidApp.Helpers
 
             if (uri != null)
             {
-                context.ContentResolver.ReleasePersistableUriPermission(uri, flags);
+                try { context.ContentResolver.ReleasePersistableUriPermission(uri, flags); }
+                catch (Exception ex) { Android.Util.Log.Error(Constants.TAG, ex.Message); }
+
                 AppPrefs.RemoveKey(context, key.ToString());
             }
         }
@@ -48,13 +53,12 @@ namespace Arise.FileSyncer.AndroidApp.Helpers
         public static bool CheckUriPermissions(Context context, Guid key, bool isReceive)
         {
             var uri = AppPrefs.GetUri(context, key.ToString());
-            var uriPermissions = context.ContentResolver.PersistedUriPermissions;
 
             if (uri != null)
             {
-                foreach (var uriPermission in uriPermissions)
+                foreach (var uriPermission in context.ContentResolver.PersistedUriPermissions)
                 {
-                    if (uriPermission.Uri == uri)
+                    if (uriPermission.Uri.Path == uri.Path)
                     {
                         if (!uriPermission.IsReadPermission) return false;
                         if (isReceive && !uriPermission.IsWritePermission) return false;

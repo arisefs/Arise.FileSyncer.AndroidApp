@@ -5,6 +5,7 @@ using Android.OS;
 using Android.Support.Design.Widget;
 using Android.Support.V7.App;
 using Android.Views;
+using Android.Widget;
 using Arise.FileSyncer.AndroidApp.Helpers;
 using Arise.FileSyncer.AndroidApp.Service;
 using AlertDialog = Android.Support.V7.App.AlertDialog;
@@ -40,6 +41,20 @@ namespace Arise.FileSyncer.AndroidApp.Activities
             {
                 OnError(Resource.String.error_profile_id_retrive);
             }
+
+            var checkURIButton = FindViewById<Button>(Resource.Id.debug_check_uri_permission);
+            checkURIButton.Clickable = true;
+            checkURIButton.Click += (s, e) => {
+                if (SyncerService.Instance.Peer.Settings.Profiles.TryGetValue(profileId, out var profile))
+                {
+                    bool result = UriHelper.CheckUriPermissions(this, profileId, profile.AllowReceive);
+                    Toast.MakeText(this, $"Result: {result}", ToastLength.Short).Show();
+                }
+                else
+                {
+                    Toast.MakeText(this, "Failed to get profile", ToastLength.Short).Show();
+                }
+            };
         }
 
         protected override void OnStart()
