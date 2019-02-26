@@ -117,7 +117,7 @@ namespace Arise.FileSyncer.AndroidApp.Activities
                     }
                     catch (Exception ex)
                     {
-                        Android.Util.Log.Error(Constants.TAG, $"{this}: {ex.Message}");
+                        Android.Util.Log.Error(Constants.TAG, $"ProfileReceivedActivity.Args: {ex.Message}");
                     }
                 }
 
