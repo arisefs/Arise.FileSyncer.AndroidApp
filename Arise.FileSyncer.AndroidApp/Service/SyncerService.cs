@@ -1,10 +1,12 @@
 using System;
+using System.Collections.Generic;
 using System.Threading;
 using Android.Content;
 using Android.OS;
 using Arise.FileSyncer.Common;
 using Arise.FileSyncer.Core;
 using Arise.FileSyncer.Core.FileSync;
+using Microsoft.AppCenter.Analytics;
 using Timer = System.Timers.Timer;
 
 namespace Arise.FileSyncer.AndroidApp.Service
@@ -110,8 +112,18 @@ namespace Arise.FileSyncer.AndroidApp.Service
 
         private void SetupOSMethods()
         {
+            Log.Error = (message) =>
+            {
+                var properties = new Dictionary<string, string>
+                {
+                    { "Message", message }
+                };
+
+                Analytics.TrackEvent("Internal Error", properties);
+                Android.Util.Log.Error(Constants.TAG, $"{TAG}: {message}");
+            };
+
             // Setup Log
-            Log.Error = (message) => Android.Util.Log.Error(Constants.TAG, $"{TAG}: {message}");
             Log.Warning = (message) => Android.Util.Log.Warn(Constants.TAG, $"{TAG}: {message}");
             Log.Info = (message) => Android.Util.Log.Info(Constants.TAG, $"{TAG}: {message}");
             Log.Verbose = (message) => Android.Util.Log.Verbose(Constants.TAG, $"{TAG}: {message}");

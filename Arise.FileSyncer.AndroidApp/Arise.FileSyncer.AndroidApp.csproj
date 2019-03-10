@@ -142,7 +142,13 @@
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Arise.FileSyncer.Common">
-      <Version>1.0.35</Version>
+      <Version>1.0.39</Version>
+    </PackageReference>
+    <PackageReference Include="Microsoft.AppCenter.Analytics">
+      <Version>1.13.2</Version>
+    </PackageReference>
+    <PackageReference Include="Microsoft.AppCenter.Crashes">
+      <Version>1.13.2</Version>
     </PackageReference>
     <PackageReference Include="Xamarin.Android.Support.Design" Version="28.0.0.1" />
   </ItemGroup>
