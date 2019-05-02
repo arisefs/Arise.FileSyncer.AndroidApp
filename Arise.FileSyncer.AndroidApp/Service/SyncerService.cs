@@ -31,8 +31,8 @@ namespace Arise.FileSyncer.AndroidApp.Service
 
         public SyncerConfig Config { get; }
         public SyncerPeer Peer { get; }
+        public NetworkDiscovery Discovery { get; }
 
-        private readonly NetworkDiscovery discovery;
         private readonly NetworkListener listener;
 
         private readonly Context context;
@@ -56,7 +56,7 @@ namespace Arise.FileSyncer.AndroidApp.Service
 
             Peer = new SyncerPeer(Config.PeerSettings);
             listener = new NetworkListener(Config, Peer.AddConnection);
-            discovery = new NetworkDiscovery(Config, Peer, listener);
+            Discovery = new NetworkDiscovery(Config, Peer, listener);
 
             // Subscribe to save events
             Peer.NewPairAdded += (s, e) => Config.Save();
@@ -84,7 +84,7 @@ namespace Arise.FileSyncer.AndroidApp.Service
         public void Run()
         {
             // Send out a single discovery signal
-            discovery.SendDiscoveryMessage();
+            Discovery.SendDiscoveryMessage();
             Log.Debug($"{TAG}: Discovery message sent");
 
             do
@@ -97,17 +97,12 @@ namespace Arise.FileSyncer.AndroidApp.Service
             Log.Debug($"{TAG}: Finished");
         }
 
-        public void SendDiscoveryMessage()
-        {
-            discovery.SendDiscoveryMessage();
-        }
-
         public void SetAllowPairing(bool newState)
         {
             Log.Info("Setting 'AllowPairing' to " + newState);
             Peer.AllowPairing = newState;
 
-            if (newState) discovery.SendDiscoveryMessage();
+            if (newState) Discovery.SendDiscoveryMessage();
         }
 
         private void SetupOSMethods()
@@ -162,7 +157,7 @@ namespace Arise.FileSyncer.AndroidApp.Service
                 {
                     progressTimer.Dispose();
                     listener.Dispose();
-                    discovery.Dispose();
+                    Discovery.Dispose();
                     Peer.Dispose();
                     notification.Clear();
                 }

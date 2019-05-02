@@ -29,10 +29,12 @@
   <string name="msg_profile_accepted">Sync profile has been successfully accepted</string>
   <string name="msg_profile_updated">Sync profile has been successfully updated</string>
 
+  <string name="dialog_btn_ok">Ok</string>
   <string name="dialog_btn_cancel">Cancel</string>
   <string name="dialog_btn_delete">Delete</string>
   <string name="dialog_profile_delete_title">Delete profile</string>
   <string name="dialog_profile_delete_message">Are you sure you want to delete this profile?</string>
+  <string name="dialog_settings_edit_port_title">Edit network port</string>
 
   <string name="ui_pnew_name">Name</string>
   <string name="ui_pnew_directory">Directory</string>

@@ -19,7 +19,7 @@ using Toolbar = Android.Support.V7.Widget.Toolbar;
 
 namespace Arise.FileSyncer.AndroidApp.Activities
 {
-    [Android.App.Activity(Label = "@string/act_main", Theme = "@style/AppTheme.NoActionBar")]
+    [Android.App.Activity(Label = "@string/act_main", Theme = "@style/AppTheme.NoActionBar.TransStatus")]
     public class MainActivity : AppCompatActivity, NavigationView.IOnNavigationItemSelectedListener
     {
         protected int navId = Resource.Id.nav_profiles;
@@ -31,7 +31,7 @@ namespace Arise.FileSyncer.AndroidApp.Activities
         {
             base.OnCreate(savedInstanceState);
 
-            SyncerService.Instance.SendDiscoveryMessage();
+            SyncerService.Instance.Discovery.SendDiscoveryMessage();
 
             SetContentView(Resource.Layout.activity_main);
             Toolbar toolbar = FindViewById<Toolbar>(Resource.Id.toolbar);
