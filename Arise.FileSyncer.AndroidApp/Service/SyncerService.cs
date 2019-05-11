@@ -181,7 +181,7 @@ namespace Arise.FileSyncer.AndroidApp.Service
             {
                 if (disposing)
                 {
-                    progressTimer.Dispose();
+                    progressTracker.Dispose();
                     listener.Dispose();
                     Discovery.Dispose();
                     Peer.Dispose();
