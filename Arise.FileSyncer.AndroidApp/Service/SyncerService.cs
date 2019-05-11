@@ -37,7 +37,7 @@ namespace Arise.FileSyncer.AndroidApp.Service
 
         private readonly Context context;
         private readonly SyncerNotification notification;
-        private readonly Timer progressTimer;
+        private readonly ProgressTracker progressTracker;
 
         public SyncerService(Context context)
         {
@@ -74,11 +74,8 @@ namespace Arise.FileSyncer.AndroidApp.Service
             Log.Verbose($"{TAG}: Initialized");
             Log.Verbose($"{TAG}: Listener IP: {listener.LocalEndpoint}");
 
-            progressTimer = new Timer();
-            progressTimer.Elapsed += ProgressTimer_Elapsed;
-            progressTimer.Interval = 1000; // 1 second
-            progressTimer.AutoReset = true;
-            progressTimer.Start();
+            progressTracker = new ProgressTracker(Peer, 1000, 5);
+            progressTracker.ProgressUpdate += ProgressTracker_ProgressUpdate;
         }
 
         public void Run()
@@ -140,10 +137,39 @@ namespace Arise.FileSyncer.AndroidApp.Service
             Utility.FileSetTime = (_a, _b, _c, _d, _e) => false;
         }
 
+        private void ProgressTracker_ProgressUpdate(object sender, ProgressUpdateEventArgs e)
+        {
+            if (Peer.IsSyncing())
+            {
+                bool indeterminate = true;
+                long current = 0;
+                long maximum = 0;
+                double speed = 0;
+                int count = 0;
+
+                foreach (var kv in e.Progresses)
+                {
+                    var progress = kv.Value.Progress;
+                    if (!progress.Indeterminate)
+                    {
+                        indeterminate = false;
+                        current += progress.Current;
+                        maximum += progress.Maximum;
+                        speed += kv.Value.Speed;
+                        count++;
+                    }
+                }
+
+                speed /= count;
+
+                notification.Show(indeterminate, current, maximum, speed);
+            }
+            else notification.Clear();
+        }
+
         private void ProgressTimer_Elapsed(object sender, System.Timers.ElapsedEventArgs e)
         {
-            if (Peer.IsSyncing()) notification.Show(Peer.GetGlobalProgress());
-            else notification.Clear();
+            
         }
 
         #region IDisposable Support

@@ -9,16 +9,23 @@ namespace Arise.FileSyncer.AndroidApp.Service
     {
         private const string channelId = "syncer_notification";
         private const string channelName = "Syncer Notification Channel";
+        private const string wakelockTag = "syncer_wakelock";
 
         private const int syncNotifyId = 0;
 
         private readonly Context context;
         private readonly NotificationManager notificationManager;
+        private readonly PowerManager.WakeLock wakeLock;
 
         public SyncerNotification(Context context)
         {
             this.context = context;
             notificationManager = context.GetSystemService(Context.NotificationService) as NotificationManager;
+
+            // Get wake lock
+            PowerManager powerManager = context.GetSystemService(Context.PowerService) as PowerManager;
+            if (powerManager == null) Log.Error("Failed to get PowerManager");
+            wakeLock = powerManager.NewWakeLock(WakeLockFlags.Partial, wakelockTag);
 
             // Create channel
             if (Build.VERSION.SdkInt >= BuildVersionCodes.O)
@@ -28,7 +35,7 @@ namespace Arise.FileSyncer.AndroidApp.Service
             }
         }
 
-        public void Show(ProgressCounter progress)
+        public void Show(bool indeterminate, long current, long maximum, double speed)
         {
             Notification.Builder notificationBuilder;
 
@@ -44,33 +51,98 @@ namespace Arise.FileSyncer.AndroidApp.Service
 #pragma warning restore 0618
             }
 
-            string rawText = context.Resources.GetString(Resource.String.notification_text);
-            string notificationText = string.Format(rawText, ((progress.Maximum - progress.Current) / 1024).ToString("### ### ##0"));
+            // Speed text calc
+            (var speedNum, var speedLevel) = DividerCounter(speed, 1000);
+            string speedText = $"{speedNum.ToString("### ##0.0")} {SpeedLevel(speedLevel)}/s";
 
+            // Time text calc
+            string timeText;
+            if (speed > 0)
+            {
+                string rawTimeText = context.Resources.GetString(Resource.String.notification_time);
+                (var timeNum, var timeLevel) = DividerCounter((maximum - current) / speed, 60);
+                timeText = string.Format(rawTimeText, $"{timeNum.ToString("0")} {context.Resources.GetString(TimeLevel(timeLevel))}");
+            }
+            else timeText = "-";
+
+            // Notification text
+            string rawNotificationText = context.Resources.GetString(Resource.String.notification_text);
+            string notificationText = string.Format(rawNotificationText, speedText, timeText);
+
+            // Build notification
             notificationBuilder
                 .SetSmallIcon(Resource.Drawable.baseline_sync_24)
                 .SetContentTitle(context.Resources.GetString(Resource.String.notification_title))
                 .SetContentText(notificationText)
                 .SetCategory(Notification.CategoryProgress)
-                .SetProgress(100, (int)(progress.GetPercent() * 100), progress.Indeterminate)
+                .SetProgress(100, (int)(indeterminate ? 0 : GetPercent(current, maximum) * 100), indeterminate)
                 .SetOngoing(true);
 
-            //if (Build.VERSION.SdkInt >= BuildVersionCodes.O)
-            //{
-            //    notificationBuilder.SetTimeoutAfter(5000);
-            //}
-
-            //context.Resources.GetString(Resource.String.notification_content_text)
+            if (Build.VERSION.SdkInt >= BuildVersionCodes.O)
+            {
+                notificationBuilder.SetTimeoutAfter(5000);
+            }
 
             Notification notification = notificationBuilder.Build();
             notification.Priority = (int)NotificationPriority.Low;
 
             notificationManager.Notify(syncNotifyId, notification);
+            if (!wakeLock.IsHeld) wakeLock.Acquire();
         }
 
         public void Clear()
         {
             notificationManager.Cancel(syncNotifyId);
+            if (wakeLock.IsHeld) wakeLock.Release();
+        }
+
+        private static (double, int) DividerCounter(double number, double divider)
+        {
+            int level = 0;
+
+            while ((number / divider) >= 1.0)
+            {
+                number /= divider;
+                level++;
+            }
+
+            return (number, level);
+        }
+
+        private static string SpeedLevel(int level)
+        {
+            switch (level)
+            {
+                case 0: return "B";
+                case 1: return "KB";
+                case 2: return "MB";
+                case 3: return "GB";
+                case 4: return "TB";
+                default: return "PB";
+            }
+        }
+
+        private static int TimeLevel(int level)
+        {
+            switch (level)
+            {
+                case 0: return Resource.String.unit_time_seconds;
+                case 1: return Resource.String.unit_time_minutes;
+                default: return Resource.String.unit_time_hours;
+            }
+        }
+
+        private static double GetPercent(long current, long maximum)
+        {
+            if (current < 0 || maximum < 0 || current > maximum)
+            {
+                return 0.0;
+            }
+
+            if (maximum == 0) return 1.0;
+            if (current == 0) return 0.0;
+
+            return current / (double)maximum;
         }
     }
 }

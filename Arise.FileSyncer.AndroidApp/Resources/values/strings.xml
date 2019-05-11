@@ -21,7 +21,12 @@
   <string name="nav_item_settings">Settings</string>
 
   <string name="notification_title">Syncing files...</string>
-  <string name="notification_text">{0}KB remaining</string>
+  <string name="notification_text">{0} | {1}</string>
+  <string name="notification_time">{0} remaining</string>
+  
+  <string name="unit_time_seconds">seconds</string>
+  <string name="unit_time_minutes">minutes</string>
+  <string name="unit_time_hours">hours</string>
 
   <string name="msg_pairing_enabled">Pairing has been enabled</string>
   <string name="msg_pairing_disabled">Pairing has been disabled</string>
