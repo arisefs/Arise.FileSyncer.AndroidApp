@@ -171,11 +171,6 @@ namespace Arise.FileSyncer.AndroidApp.Service
             else notification.Clear();
         }
 
-        private void ProgressTimer_Elapsed(object sender, System.Timers.ElapsedEventArgs e)
-        {
-            
-        }
-
         #region IDisposable Support
         private bool disposedValue = false;
 

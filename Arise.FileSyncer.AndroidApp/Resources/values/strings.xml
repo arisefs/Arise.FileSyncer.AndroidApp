@@ -40,9 +40,9 @@
   <string name="dialog_profile_delete_title">Delete profile</string>
   <string name="dialog_profile_delete_message">Are you sure you want to delete this profile?</string>
   <string name="dialog_settings_edit_port_title">Edit network port</string>
-  <string name="dialog_settings_edit_timeout_title">Edit progress timeout</string>
-  <string name="dialog_settings_edit_ping_title">Edit ping interval</string>
-  <string name="dialog_settings_edit_buffer_title">Edit buffer size</string>
+  <string name="dialog_settings_edit_timeout_title">Edit progress timeout (ms)</string>
+  <string name="dialog_settings_edit_ping_title">Edit ping interval (ms)</string>
+  <string name="dialog_settings_edit_buffer_title">Edit buffer size (byte)</string>
   <string name="dialog_settings_edit_chunk_title">Edit max chunk count</string>
 
   <string name="ui_pnew_name">Name</string>
