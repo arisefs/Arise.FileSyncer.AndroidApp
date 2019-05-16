@@ -52,7 +52,7 @@ namespace Arise.FileSyncer.AndroidApp.Activities
 
         protected override void OnEditDone()
         {
-            if (SyncerService.Instance.Peer.Settings.Profiles.TryGetValue(profileId, out var oldProfile))
+            if (!SyncerService.Instance.Peer.Settings.Profiles.TryGetValue(profileId, out var oldProfile))
             {
                 OnError(Resource.String.error_profile_details_retrive);
                 return;
