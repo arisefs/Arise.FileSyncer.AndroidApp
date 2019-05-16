@@ -4,6 +4,7 @@ using System.Threading;
 using Android.Content;
 using Android.OS;
 using Arise.FileSyncer.Common;
+using Arise.FileSyncer.Common.Security;
 using Arise.FileSyncer.Core;
 using Arise.FileSyncer.Core.FileSync;
 using Microsoft.AppCenter.Analytics;
@@ -48,13 +49,12 @@ namespace Arise.FileSyncer.AndroidApp.Service
             SetupOSMethods();
 
             Config = new SyncerConfig();
-
             if (!Config.Load())
             {
                 Log.Info($"{TAG}: Failed to load config. Creating new!");
                 Config.Reset(new SyncerPeerSettings(Guid.NewGuid(), $"{Build.Manufacturer} {Build.Model}"));
-                Config.Save();
             }
+            Config.Save();
 
             Peer = new SyncerPeer(Config.PeerSettings);
             listener = new NetworkListener(Config, Peer.AddConnection);
@@ -137,6 +137,9 @@ namespace Arise.FileSyncer.AndroidApp.Service
             // Disable Timestamp and FileSetTime since its not supported
             SyncerPeer.SupportTimestamp = false;
             Utility.FileSetTime = (_a, _b, _c, _d, _e) => false;
+
+            // Set smaller RSA key size
+            KeyInfo.RSAKeySize = 1024;
         }
 
         private void ProgressTracker_ProgressUpdate(object sender, ProgressUpdateEventArgs e)
