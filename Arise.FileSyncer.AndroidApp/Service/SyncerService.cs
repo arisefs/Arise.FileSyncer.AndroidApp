@@ -50,7 +50,7 @@ namespace Arise.FileSyncer.AndroidApp.Service
             if (!Config.Load())
             {
                 Log.Info($"{TAG}: Failed to load config. Creating new!");
-                Config.PeerSettings = new SyncerPeerSettings(Guid.NewGuid(), $"{Build.Manufacturer} {Build.Model}");
+                Config.Reset(new SyncerPeerSettings(Guid.NewGuid(), $"{Build.Manufacturer} {Build.Model}"));
                 Config.Save();
             }
 
