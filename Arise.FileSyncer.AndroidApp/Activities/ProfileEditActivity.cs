@@ -69,11 +69,14 @@ namespace Arise.FileSyncer.AndroidApp.Activities
 
             if (SyncerService.Instance.Peer.UpdateProfile(profileId, profile))
             {
-                // Remove old URI permissions
-                UriHelper.RemoveUriWithPermissions(this, profileId);
+                if (selectedUri != null)
+                {
+                    // Remove old URI permissions
+                    UriHelper.RemoveUriWithPermissions(this, profileId);
 
-                // Save URI and permissions
-                UriHelper.SaveUriWithPermissions(this, selectedUri, profileId, cbAllowReceive.Checked);
+                    // Save URI and permissions
+                    UriHelper.SaveUriWithPermissions(this, selectedUri, profileId, cbAllowReceive.Checked);
+                }
 
                 // Notify user
                 Toast.MakeText(this, Resource.String.msg_profile_updated, ToastLength.Short).Show();
