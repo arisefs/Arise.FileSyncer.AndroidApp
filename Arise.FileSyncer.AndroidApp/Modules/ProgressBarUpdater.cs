@@ -13,14 +13,14 @@ namespace Arise.FileSyncer.AndroidApp.Modules
         private const int BarMax = 500;
         private const int UpdateInterval = 500;
 
-        private readonly Func<ProgressCounter> updateFunc;
+        private readonly Func<ISyncProgress> updateFunc;
         private readonly ProgressBar progressBar;
         private readonly Activity activity;
         private readonly Timer progressTimer;
 
         private bool isBarVisible;
 
-        public ProgressBarUpdater(Activity activity, ProgressBar progressBar, Func<ProgressCounter> updateFunc)
+        public ProgressBarUpdater(Activity activity, ProgressBar progressBar, Func<ISyncProgress> updateFunc)
         {
             this.progressBar = progressBar;
             this.updateFunc = updateFunc;

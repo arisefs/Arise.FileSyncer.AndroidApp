@@ -1,6 +1,7 @@
 using Android.App;
 using Android.Content;
 using Android.OS;
+using Arise.FileSyncer.Common;
 using Arise.FileSyncer.Core;
 
 namespace Arise.FileSyncer.AndroidApp.Service
@@ -35,7 +36,7 @@ namespace Arise.FileSyncer.AndroidApp.Service
             }
         }
 
-        public void Show(bool indeterminate, long current, long maximum, double speed)
+        public void Show(ProgressStatus progress)
         {
             Notification.Builder notificationBuilder;
 
@@ -52,15 +53,15 @@ namespace Arise.FileSyncer.AndroidApp.Service
             }
 
             // Speed text calc
-            (var speedNum, var speedLevel) = DividerCounter(speed, 1000);
+            (var speedNum, var speedLevel) = DividerCounter(progress.Speed, 1000);
             string speedText = $"{speedNum.ToString("### ##0.0")} {SpeedLevel(speedLevel)}/s";
 
             // Time text calc
             string timeText;
-            if (speed > 0)
+            if (progress.Speed > 0)
             {
                 string rawTimeText = context.Resources.GetString(Resource.String.notification_time);
-                (var timeNum, var timeLevel) = DividerCounter((maximum - current) / speed, 60);
+                (var timeNum, var timeLevel) = DividerCounter((progress.Maximum - progress.Current) / progress.Speed, 60);
                 timeText = string.Format(rawTimeText, $"{timeNum.ToString("0")} {context.Resources.GetString(TimeLevel(timeLevel))}");
             }
             else timeText = "-";
@@ -75,7 +76,7 @@ namespace Arise.FileSyncer.AndroidApp.Service
                 .SetContentTitle(context.Resources.GetString(Resource.String.notification_title))
                 .SetContentText(notificationText)
                 .SetCategory(Notification.CategoryProgress)
-                .SetProgress(100, (int)(indeterminate ? 0 : GetPercent(current, maximum) * 100), indeterminate)
+                .SetProgress(100, (int)(progress.Indeterminate ? 0 : progress.GetPercent() * 100), progress.Indeterminate)
                 .SetOngoing(true);
 
             if (Build.VERSION.SdkInt >= BuildVersionCodes.O)
@@ -130,19 +131,6 @@ namespace Arise.FileSyncer.AndroidApp.Service
                 case 1: return Resource.String.unit_time_minutes;
                 default: return Resource.String.unit_time_hours;
             }
-        }
-
-        private static double GetPercent(long current, long maximum)
-        {
-            if (current < 0 || maximum < 0 || current > maximum)
-            {
-                return 0.0;
-            }
-
-            if (maximum == 0) return 1.0;
-            if (current == 0) return 0.0;
-
-            return current / (double)maximum;
         }
     }
 }

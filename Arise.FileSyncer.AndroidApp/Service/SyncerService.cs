@@ -33,6 +33,8 @@ namespace Arise.FileSyncer.AndroidApp.Service
         public SyncerPeer Peer { get; }
         public NetworkDiscovery Discovery { get; }
 
+        public ProgressStatus GlobalProgress { get; private set; }
+
         private readonly NetworkListener listener;
 
         private readonly Context context;
@@ -147,22 +149,24 @@ namespace Arise.FileSyncer.AndroidApp.Service
                 double speed = 0;
                 int count = 0;
 
-                foreach (var kv in e.Progresses)
+                foreach (var progress in e.Progresses)
                 {
-                    var progress = kv.Value.Progress;
                     if (!progress.Indeterminate)
                     {
                         indeterminate = false;
                         current += progress.Current;
                         maximum += progress.Maximum;
-                        speed += kv.Value.Speed;
+                        speed += progress.Speed;
                         count++;
                     }
                 }
 
                 speed /= count;
 
-                notification.Show(indeterminate, current, maximum, speed);
+                GlobalProgress = new ProgressStatus(Guid.Empty, indeterminate, current, maximum, speed);
+
+                notification.Show(GlobalProgress);
+
             }
             else notification.Clear();
         }

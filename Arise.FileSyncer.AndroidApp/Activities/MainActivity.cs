@@ -224,9 +224,9 @@ namespace Arise.FileSyncer.AndroidApp.Activities
             RunOnUiThread(() => { StartActivity(intent); });
         }
 
-        private ProgressCounter UpdateGlobalProgressBar()
+        private ISyncProgress UpdateGlobalProgressBar()
         {
-            if (SyncerService.Instance.Peer.IsSyncing() == true) return SyncerService.Instance.Peer.GetGlobalProgress();
+            if (SyncerService.Instance.Peer.IsSyncing() == true) return SyncerService.Instance.GlobalProgress;
             else return null;
         }
 
