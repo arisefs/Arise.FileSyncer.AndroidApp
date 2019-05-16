@@ -43,5 +43,121 @@
         </LinearLayout>
         <include
             layout="@layout/settings_divider" />
+        <LinearLayout
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/option_timeout"
+            android:background="?attr/selectableItemBackground"
+            android:paddingTop="12dp"
+            android:paddingBottom="12dp"
+            android:clickable="true">
+            <TextView
+                android:text="@string/settings_title_progress_timeout"
+                android:textAppearance="@style/TextAppearance.Settings.Title"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="16dp"
+                android:layout_marginRight="16dp" />
+            <TextView
+                android:text="&lt;Progress timeout&gt;"
+                android:textAppearance="@style/TextAppearance.Settings.Description"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/tv_timeout"
+                android:layout_marginLeft="16dp"
+                android:layout_marginRight="16dp" />
+        </LinearLayout>
+        <include
+            layout="@layout/settings_divider" />
+        <LinearLayout
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/option_ping"
+            android:background="?attr/selectableItemBackground"
+            android:paddingTop="12dp"
+            android:paddingBottom="12dp"
+            android:clickable="true">
+            <TextView
+                android:text="@string/settings_title_ping_interval"
+                android:textAppearance="@style/TextAppearance.Settings.Title"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="16dp"
+                android:layout_marginRight="16dp" />
+            <TextView
+                android:text="&lt;Ping interval&gt;"
+                android:textAppearance="@style/TextAppearance.Settings.Description"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/tv_ping"
+                android:layout_marginLeft="16dp"
+                android:layout_marginRight="16dp" />
+        </LinearLayout>
+        <include
+            layout="@layout/settings_divider" />
+        <TextView
+            android:text="@string/settings_group_filesync"
+            android:textAppearance="@style/TextAppearance.Settings.Header"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="16dp"
+            android:layout_marginRight="16dp"
+            android:layout_marginTop="16dp" />
+        <LinearLayout
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/option_buffer"
+            android:background="?attr/selectableItemBackground"
+            android:paddingTop="12dp"
+            android:paddingBottom="12dp"
+            android:clickable="true">
+            <TextView
+                android:text="@string/settings_title_buffer_size"
+                android:textAppearance="@style/TextAppearance.Settings.Title"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="16dp"
+                android:layout_marginRight="16dp" />
+            <TextView
+                android:text="&lt;Buffer size&gt;"
+                android:textAppearance="@style/TextAppearance.Settings.Description"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/tv_buffer"
+                android:layout_marginLeft="16dp"
+                android:layout_marginRight="16dp" />
+        </LinearLayout>
+        <include
+            layout="@layout/settings_divider" />
+        <LinearLayout
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/option_chunk"
+            android:background="?attr/selectableItemBackground"
+            android:paddingTop="12dp"
+            android:paddingBottom="12dp"
+            android:clickable="true">
+            <TextView
+                android:text="@string/settings_title_chunk_count"
+                android:textAppearance="@style/TextAppearance.Settings.Title"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="16dp"
+                android:layout_marginRight="16dp" />
+            <TextView
+                android:text="&lt;Chunk count&gt;"
+                android:textAppearance="@style/TextAppearance.Settings.Description"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/tv_chunk"
+                android:layout_marginLeft="16dp"
+                android:layout_marginRight="16dp" />
+        </LinearLayout>
+        <include
+            layout="@layout/settings_divider" />
     </LinearLayout>
 </ScrollView>

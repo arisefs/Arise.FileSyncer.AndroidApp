@@ -40,6 +40,10 @@
   <string name="dialog_profile_delete_title">Delete profile</string>
   <string name="dialog_profile_delete_message">Are you sure you want to delete this profile?</string>
   <string name="dialog_settings_edit_port_title">Edit network port</string>
+  <string name="dialog_settings_edit_timeout_title">Edit progress timeout</string>
+  <string name="dialog_settings_edit_ping_title">Edit ping interval</string>
+  <string name="dialog_settings_edit_buffer_title">Edit buffer size</string>
+  <string name="dialog_settings_edit_chunk_title">Edit max chunk count</string>
 
   <string name="ui_pnew_name">Name</string>
   <string name="ui_pnew_directory">Directory</string>
@@ -49,7 +53,12 @@
   <string name="ui_pnew_skip_hidden">Skip hidden files</string>
 
   <string name="settings_group_connection">Connection</string>
+  <string name="settings_group_filesync">File Sync</string>
   <string name="settings_title_port">Network port</string>
+  <string name="settings_title_progress_timeout">Progress timeout</string>
+  <string name="settings_title_ping_interval">Ping interval</string>
+  <string name="settings_title_buffer_size">Buffer size</string>
+  <string name="settings_title_chunk_count">Maximum number of chunks</string>
 
   <string name="error_unknown">Unknown error</string>
   <string name="error_service_unavailable">Service is unavailable</string>
