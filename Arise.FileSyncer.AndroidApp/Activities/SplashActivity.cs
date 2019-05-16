@@ -1,9 +1,10 @@
-﻿using Android;
+using Android;
 using Android.App;
 using Android.Content;
 using Android.Content.PM;
 using Android.OS;
 using Android.Support.V7.App;
+using Arise.FileSyncer.AndroidApp.Service;
 
 namespace Arise.FileSyncer.AndroidApp.Activities
 {
@@ -51,6 +52,8 @@ namespace Arise.FileSyncer.AndroidApp.Activities
 
         private void GoToMain()
         {
+            SyncerService.Instance.Discovery.SendDiscoveryMessage();
+
             var intent = new Intent(Application.Context, typeof(MainActivity));
             intent.SetFlags(ActivityFlags.NewTask);
 

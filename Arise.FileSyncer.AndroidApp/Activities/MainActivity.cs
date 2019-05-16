@@ -31,8 +31,6 @@ namespace Arise.FileSyncer.AndroidApp.Activities
         {
             base.OnCreate(savedInstanceState);
 
-            SyncerService.Instance.Discovery.SendDiscoveryMessage();
-
             SetContentView(Resource.Layout.activity_main);
             Toolbar toolbar = FindViewById<Toolbar>(Resource.Id.toolbar);
             SetSupportActionBar(toolbar);
@@ -82,6 +80,13 @@ namespace Arise.FileSyncer.AndroidApp.Activities
             SyncerService.Instance.Peer.ProfileReceived += Peer_ProfileReceived;
 
             SyncerJob.Schedule(this, false);
+        }
+
+        protected override void OnResume()
+        {
+            base.OnResume();
+
+            SyncerService.Instance.Discovery.SendDiscoveryMessage();
         }
 
         protected override void OnStop()
