@@ -55,6 +55,7 @@ namespace Arise.FileSyncer.AndroidApp.Service
                 Config.Reset(new SyncerPeerSettings(Guid.NewGuid(), $"{Build.Manufacturer} {Build.Model}"));
             }
             Config.Save();
+            Config.SaveKey();
 
             Peer = new SyncerPeer(Config.PeerSettings);
             listener = new NetworkListener(Config, Peer.AddConnection);
@@ -139,7 +140,7 @@ namespace Arise.FileSyncer.AndroidApp.Service
             Utility.FileSetTime = (_a, _b, _c, _d, _e) => false;
 
             // Set smaller RSA key size
-            KeyInfo.RSAKeySize = 1024;
+            SyncerConfig.RSAKeySize = 1024;
         }
 
         private void ProgressTracker_ProgressUpdate(object sender, ProgressUpdateEventArgs e)
