@@ -4,11 +4,9 @@ using System.Threading;
 using Android.Content;
 using Android.OS;
 using Arise.FileSyncer.Common;
-using Arise.FileSyncer.Common.Security;
 using Arise.FileSyncer.Core;
 using Arise.FileSyncer.Core.FileSync;
 using Microsoft.AppCenter.Analytics;
-using Timer = System.Timers.Timer;
 
 namespace Arise.FileSyncer.AndroidApp.Service
 {
