@@ -35,6 +35,7 @@ namespace Arise.FileSyncer.AndroidApp.Service
         public ProgressStatus GlobalProgress { get; private set; }
 
         private readonly NetworkListener listener;
+        private readonly KeyConfig keyConfig;
 
         private readonly Context context;
         private readonly SyncerNotification notification;
@@ -46,17 +47,28 @@ namespace Arise.FileSyncer.AndroidApp.Service
             notification = new SyncerNotification(context);
             SetupOSMethods();
 
+            // Load config
             Config = new SyncerConfig();
-            if (!Config.Load())
+            LoadResult loadResult = Config.Load(CreatePeerSettings);
+            if (loadResult != LoadResult.Loaded)
             {
-                Log.Info($"{TAG}: Failed to load config. Creating new!");
-                Config.Reset(new SyncerPeerSettings(Guid.NewGuid(), $"{Build.Manufacturer} {Build.Model}"));
+                if (loadResult == LoadResult.Created) Log.Info("Created new config");
+                if (Config.Save()) Log.Info("Saved config after create/upgrade");
+                else Log.Error("Failed to save config after create/upgrade");
             }
-            Config.Save();
-            Config.SaveKey();
+
+            // Load key
+            keyConfig = new KeyConfig(1024);
+            loadResult = keyConfig.Load();
+            if (loadResult != LoadResult.Loaded)
+            {
+                if (loadResult == LoadResult.Created) Log.Info("Created new key");
+                if (keyConfig.Save()) Log.Info("Saved key after create/upgrade");
+                else Log.Error("Failed to save key after create/upgrade");
+            }
 
             Peer = new SyncerPeer(Config.PeerSettings);
-            listener = new NetworkListener(Config, Peer.AddConnection);
+            listener = new NetworkListener(Config, keyConfig, Peer.AddConnection);
             Discovery = new NetworkDiscovery(Config, Peer, listener);
 
             // Subscribe to save events
@@ -77,6 +89,11 @@ namespace Arise.FileSyncer.AndroidApp.Service
 
             progressTracker = new ProgressTracker(Peer, 1000, 5);
             progressTracker.ProgressUpdate += ProgressTracker_ProgressUpdate;
+        }
+
+        private static SyncerPeerSettings CreatePeerSettings()
+        {
+            return new SyncerPeerSettings(Guid.NewGuid(), $"{Build.Manufacturer} {Build.Model}");
         }
 
         public void Run()
@@ -123,7 +140,7 @@ namespace Arise.FileSyncer.AndroidApp.Service
             Log.Debug = (message) => Android.Util.Log.Debug(Constants.TAG, $"{TAG}: {message}");
 
             // Setup config folder access
-            SyncerConfig.GetConfigFolderPath = () => context.FilesDir.AbsolutePath;
+            Common.Config.GetConfigFolderPath = () => context.FilesDir.AbsolutePath;
 
             // Setup file utility functions
             Utility.FileCreate = SyncerUtility.FileCreate;
@@ -136,9 +153,6 @@ namespace Arise.FileSyncer.AndroidApp.Service
             // Disable Timestamp and FileSetTime since its not supported
             SyncerPeer.SupportTimestamp = false;
             Utility.FileSetTime = (_a, _b, _c, _d, _e) => false;
-
-            // Set smaller RSA key size
-            SyncerConfig.RSAKeySize = 1024;
         }
 
         private void ProgressTracker_ProgressUpdate(object sender, ProgressUpdateEventArgs e)
