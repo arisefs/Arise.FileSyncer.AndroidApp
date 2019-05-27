@@ -10,10 +10,10 @@
        android:id="@+id/profile_edit"
        android:icon="@drawable/baseline_edit_white_24"
        android:title="@string/action_edit"
-       local:showAsAction="ifRoom" />
+       local:showAsAction="never" />
   <item
        android:id="@+id/profile_delete"
        android:icon="@drawable/baseline_delete_white_24"
        android:title="@string/action_delete"
-       local:showAsAction="ifRoom" />
+       local:showAsAction="never" />
 </menu>

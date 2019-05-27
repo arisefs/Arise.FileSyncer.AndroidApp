@@ -74,6 +74,13 @@ namespace Arise.FileSyncer.AndroidApp.Fragments
             return view;
         }
 
+        public override void OnResume()
+        {
+            base.OnResume();
+
+            adapter.NotifyDataSetChanged();
+        }
+
         private void Adapter_ItemClick(object sender, Guid profileId)
         {
             var intent = new Intent(Activity, typeof(ProfileDetailsActivity));

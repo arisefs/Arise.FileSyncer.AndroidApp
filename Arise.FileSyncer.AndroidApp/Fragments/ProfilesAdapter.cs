@@ -1,8 +1,10 @@
 using System;
 using System.Collections.Generic;
+using Android.App;
 using Android.Support.V7.Widget;
 using Android.Views;
 using Android.Widget;
+using Arise.FileSyncer.AndroidApp.Helpers;
 using Arise.FileSyncer.Core;
 
 namespace Arise.FileSyncer.AndroidApp.Fragments
@@ -16,7 +18,7 @@ namespace Arise.FileSyncer.AndroidApp.Fragments
             public int SyncTypeRes { get; private set; }
             public DateTime LastSyncDate { get; private set; }
             public string RootDirectory { get; private set; }
-            public bool HasError { get; set; }
+            public bool HasError => CheckForErrors(Id, allowReceive);
 
             private readonly bool allowReceive;
 
@@ -27,8 +29,6 @@ namespace Arise.FileSyncer.AndroidApp.Fragments
                 SyncTypeRes = GetTypeResId(profile.AllowSend, profile.AllowReceive);
                 LastSyncDate = profile.LastSyncDate;
                 RootDirectory = profile.RootDirectory;
-                HasError = false;
-
                 allowReceive = profile.AllowReceive;
             }
 
@@ -38,6 +38,11 @@ namespace Arise.FileSyncer.AndroidApp.Fragments
                 SyncTypeRes = GetTypeResId(profile.AllowSend, profile.AllowReceive);
                 LastSyncDate = profile.LastSyncDate;
                 RootDirectory = profile.RootDirectory;
+            }
+
+            private static bool CheckForErrors(Guid id, bool allowReceive)
+            {
+                return !UriHelper.CheckUriPermissions(Application.Context, id, allowReceive);
             }
 
             private static int GetTypeResId(bool send, bool receive)

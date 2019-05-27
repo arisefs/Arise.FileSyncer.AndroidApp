@@ -52,6 +52,18 @@
   <string name="ui_pnew_allow_delete">Allow Delete</string>
   <string name="ui_pnew_skip_hidden">Skip hidden files</string>
 
+  <string name="details_profile_name">Name</string>
+  <string name="details_profile_directory">Directory</string>
+  <string name="details_profile_creation">Creation date</string>
+  <string name="details_profile_lastsync">Last sync date</string>
+  <string name="details_profile_synctype">Sync type</string>
+
+  <string name="synctype_sendonly">Send-only</string>
+  <string name="synctype_receiveonly">Receive-only</string>
+  <string name="synctype_sendreceive">Send and receive</string>
+  <string name="synctype_delete_enabled">Sync deletes are enabled</string>
+  <string name="synctype_delete_disabled">Sync deletes are disabled</string>
+
   <string name="settings_group_connection">Connection</string>
   <string name="settings_group_filesync">File Sync</string>
   <string name="settings_title_port">Network port</string>

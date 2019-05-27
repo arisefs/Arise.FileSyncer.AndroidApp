@@ -19,7 +19,7 @@ namespace Arise.FileSyncer.AndroidApp.Helpers
             if (isReceive) flags |= ActivityFlags.GrantWriteUriPermission;
 
             try { context.ContentResolver.TakePersistableUriPermission(uri, flags); }
-            catch (Exception ex) { Android.Util.Log.Error(Constants.TAG, ex.Message); }
+            catch (Exception ex) { Android.Util.Log.Error(Constants.TAG, "SaveUriWithPermissions: " + ex.Message); }
 
             AppPrefs.SaveUri(context, key.ToString(), uri);
         }
@@ -37,7 +37,7 @@ namespace Arise.FileSyncer.AndroidApp.Helpers
             if (uri != null)
             {
                 try { context.ContentResolver.ReleasePersistableUriPermission(uri, flags); }
-                catch (Exception ex) { Android.Util.Log.Error(Constants.TAG, ex.Message); }
+                catch (Exception ex) { Android.Util.Log.Error(Constants.TAG, "RemoveUriWithPermissions: " + ex.Message); }
 
                 AppPrefs.RemoveKey(context, key.ToString());
             }

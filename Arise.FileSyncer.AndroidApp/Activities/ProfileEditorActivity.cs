@@ -2,6 +2,7 @@ using System.IO;
 using Android.App;
 using Android.Content;
 using Android.OS;
+using Android.Provider;
 using Android.Support.Design.Widget;
 using Android.Support.V7.App;
 using Android.Views;
@@ -177,6 +178,11 @@ namespace Arise.FileSyncer.AndroidApp.Activities
                 ActivityFlags.GrantWriteUriPermission |
                 ActivityFlags.GrantPersistableUriPermission |
                 ActivityFlags.GrantPrefixUriPermission);
+
+            if (selectedUri != null)
+            {
+                directorySelectIntent.PutExtra(DocumentsContract.ExtraInitialUri, selectedUri);
+            }
 
             StartActivityForResult(directorySelectIntent, DirectorySelectRC);
         }

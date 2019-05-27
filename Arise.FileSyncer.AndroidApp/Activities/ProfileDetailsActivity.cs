@@ -1,21 +1,27 @@
 using System;
+using System.IO;
 using Android.App;
 using Android.Content;
 using Android.OS;
+using Android.Provider;
 using Android.Support.Design.Widget;
 using Android.Support.V7.App;
 using Android.Views;
 using Android.Widget;
 using Arise.FileSyncer.AndroidApp.Helpers;
 using Arise.FileSyncer.AndroidApp.Service;
+using Arise.FileSyncer.Core;
 using AlertDialog = Android.Support.V7.App.AlertDialog;
 using Toolbar = Android.Support.V7.Widget.Toolbar;
+using Uri = Android.Net.Uri;
 
 namespace Arise.FileSyncer.AndroidApp.Activities
 {
     [Activity(Label = "@string/act_profile_details", Theme = "@style/AppTheme.NoActionBar")]
     public class ProfileDetailsActivity : AppCompatActivity
     {
+        private const int DirectorySelectRC = 1;
+
         private Guid profileId = Guid.Empty;
 
         protected override void OnCreate(Bundle savedInstanceState)
@@ -41,20 +47,6 @@ namespace Arise.FileSyncer.AndroidApp.Activities
             {
                 OnError(Resource.String.error_profile_id_retrive);
             }
-
-            var checkURIButton = FindViewById<Button>(Resource.Id.debug_check_uri_permission);
-            checkURIButton.Clickable = true;
-            checkURIButton.Click += (s, e) => {
-                if (SyncerService.Instance.Peer.Settings.Profiles.TryGetValue(profileId, out var profile))
-                {
-                    bool result = UriHelper.CheckUriPermissions(this, profileId, profile.AllowReceive);
-                    Toast.MakeText(this, $"Result: {result}", ToastLength.Short).Show();
-                }
-                else
-                {
-                    Toast.MakeText(this, "Failed to get profile", ToastLength.Short).Show();
-                }
-            };
         }
 
         protected override void OnStart()
@@ -62,6 +54,32 @@ namespace Arise.FileSyncer.AndroidApp.Activities
             base.OnStart();
 
             UpdateViews();
+        }
+
+        protected override void OnActivityResult(int requestCode, Result resultCode, Intent data)
+        {
+            if (requestCode == DirectorySelectRC)
+            {
+                if (resultCode == Result.Ok)
+                {
+                    if (SyncerService.Instance.Peer.Settings.Profiles.TryGetValue(profileId, out var profile))
+                    {
+                        if (data.Data != null)
+                        {
+                            // Remove old URI permissions
+                            UriHelper.RemoveUriWithPermissions(this, profileId);
+
+                            // Save URI and permissions
+                            UriHelper.SaveUriWithPermissions(this, data.Data, profileId, profile.AllowReceive);
+                        }
+                    }
+                    else
+                    {
+                        OnError(Resource.String.error_profile_details_retrive);
+                    }
+                }
+            }
+            else base.OnActivityResult(requestCode, resultCode, data);
         }
 
         public override bool OnCreateOptionsMenu(IMenu menu)
@@ -132,7 +150,94 @@ namespace Arise.FileSyncer.AndroidApp.Activities
 
         private void UpdateViews()
         {
-            //TODO
+            // Fill out the profile details
+            if (SyncerService.Instance.Peer.Settings.Profiles.TryGetValue(profileId, out var profile))
+            {
+                var layout = FindViewById<LinearLayout>(Resource.Id.view_root);
+                layout.RemoveAllViews();
+
+                if (!UriHelper.CheckUriPermissions(this, profileId, profile.AllowReceive))
+                {
+                    // Show URI permission error box
+                    var errorBox = LayoutInflater.Inflate(Resource.Layout.error_profile_uri, layout, false);
+                    var fixButton = errorBox.FindViewById<Button>(Resource.Id.btn_fix);
+                    fixButton.Click += (s, e) => {
+                        /*
+                        Intent directorySelectIntent = new Intent(Intent.ActionOpenDocumentTree);
+                        directorySelectIntent.SetFlags(
+                            ActivityFlags.GrantReadUriPermission |
+                            ActivityFlags.GrantWriteUriPermission |
+                            ActivityFlags.GrantPersistableUriPermission |
+                            ActivityFlags.GrantPrefixUriPermission);
+
+                        Uri treeUri = AppPrefs.GetUri(MainApplication.AppContext, profileId.ToString());
+                        if (treeUri != null)
+                        {
+                            directorySelectIntent.PutExtra(DocumentsContract.ExtraInitialUri, treeUri);
+                        }
+
+                        StartActivityForResult(directorySelectIntent, DirectorySelectRC);
+                        */
+                    };
+                    layout.AddView(errorBox, 0);
+                }
+
+                CreateDetailsDisplay(layout, profileId, profile);
+            }
+            else
+            {
+                OnError(Resource.String.error_profile_details_retrive);
+            }
+        }
+
+        private void CreateDetailsDisplay(LinearLayout layout, Guid profileId, SyncProfile profile)
+        {
+            layout.AddView(CreateSpace(16));
+            AddDetailsItem(layout, Resource.String.details_profile_name, profile.Name);
+            layout.AddView(CreateSpace(4));
+            AddDetailsItem(layout, Resource.String.details_profile_directory, profile.RootDirectory);
+            layout.AddView(CreateSpace(4));
+            AddDetailsItem(layout, Resource.String.details_profile_synctype, GetSyncType(profile));
+            layout.AddView(CreateSpace(16));
+            AddDetailsItem(layout, Resource.String.details_profile_creation, profile.CreationDate.ToString());
+            layout.AddView(CreateSpace(4));
+            AddDetailsItem(layout, Resource.String.details_profile_lastsync, profile.LastSyncDate.ToString());
+            layout.AddView(CreateSpace(16));
+        }
+
+        private Space CreateSpace(int size)
+        {
+            var space = new Space(this);
+            space.SetMinimumHeight(AsPixel(size));
+            return space;
+        }
+        private int AsPixel(float dps)
+        {
+            return (int)(dps * Resources.DisplayMetrics.Density + 0.5f);
+        }
+
+        private View AddDetailsItem(ViewGroup root, int caption, string info)
+        {
+            var itemView = LayoutInflater.Inflate(Resource.Layout.details_item, root, false);
+            itemView.FindViewById<TextView>(Resource.Id.caption).SetText(caption);
+            itemView.FindViewById<TextView>(Resource.Id.info).Text = info;
+            root.AddView(itemView);
+            return itemView;
+        }
+
+        private string GetSyncType(SyncProfile profile)
+        {
+            return Resources.GetString(GetSyncTypeRes(profile));
+        }
+
+        private int GetSyncTypeRes(SyncProfile profile)
+        {
+            if (profile.AllowSend)
+            {
+                if (profile.AllowReceive) return Resource.String.synctype_sendreceive;
+                return Resource.String.synctype_sendonly;
+            }
+            return Resource.String.synctype_receiveonly;
         }
     }
 }

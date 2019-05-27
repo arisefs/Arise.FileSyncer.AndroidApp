@@ -25,16 +25,13 @@
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        app:layout_behavior="@string/appbar_scrolling_view_behavior" >
-
-        <Button
-            android:text="Check URI Permissions"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior">
+        <LinearLayout
+            android:orientation="vertical"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:id="@+id/debug_check_uri_permission" />
-
-		<!-- TODO -->
-
+            android:id="@+id/view_root">
+        </LinearLayout>
     </ScrollView>
 
 </android.support.design.widget.CoordinatorLayout>
