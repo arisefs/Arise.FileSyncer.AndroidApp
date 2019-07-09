@@ -76,6 +76,7 @@ namespace Arise.FileSyncer.AndroidApp.Service
             Peer.ProfileAdded += (s, e) => Config.Save();
             Peer.ProfileRemoved += (s, e) => Config.Save();
             Peer.ProfileChanged += (s, e) => Config.Save();
+            Peer.FileBuilt += Peer_FileBuilt;
 
             // Auto accept pair requests
             Peer.PairingRequest += (s, e) =>
@@ -185,6 +186,21 @@ namespace Arise.FileSyncer.AndroidApp.Service
 
             }
             else notification.Clear();
+        }
+
+        private void Peer_FileBuilt(object sender, FileBuiltEventArgs e)
+        {
+            var file = Helpers.FileUtility.GetDocumentFile(e.ProfileId, e.RelativePath, false, false);
+            if (file != null)
+            {
+                Intent scanFileIntent = new Intent(Intent.ActionMediaScannerScanFile, file.Uri);
+                try { context.SendBroadcast(scanFileIntent); }
+                catch (Exception ex) { Log.Error($"Peer_FileBuilt: {ex.Message}"); }
+            }
+            else
+            {
+                Log.Error("Peer_FileBuilt: Built file is null");
+            }
         }
 
         #region IDisposable Support
