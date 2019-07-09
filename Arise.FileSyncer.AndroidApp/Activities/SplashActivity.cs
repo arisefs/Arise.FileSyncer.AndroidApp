@@ -19,18 +19,11 @@ namespace Arise.FileSyncer.AndroidApp.Activities
             base.OnCreate(savedInstanceState);
         }
 
-        protected override void OnStart()
+        protected override void OnResume()
         {
-            base.OnStart();
+            base.OnResume();
 
-            if (Build.VERSION.SdkInt >= BuildVersionCodes.M && CheckSelfPermission(MP_WES) != Permission.Granted)
-            {
-                RequestPermissions(new string[] { MP_WES }, RPC);
-            }
-            else
-            {
-                GoToMain();
-            }
+            TryGoToMain();
         }
 
         public override void OnRequestPermissionsResult(int requestCode, string[] permissions, Permission[] grantResults)
@@ -39,7 +32,7 @@ namespace Arise.FileSyncer.AndroidApp.Activities
             {
                 if (grantResults.Length > 0 && grantResults[0] == Permission.Granted)
                 {
-                    GoToMain();
+                    TryGoToMain();
                 }
                 else
                 {
@@ -48,6 +41,37 @@ namespace Arise.FileSyncer.AndroidApp.Activities
             }
 
             base.OnRequestPermissionsResult(requestCode, permissions, grantResults);
+        }
+
+        private void TryGoToMain()
+        {
+            if (CheckPermissions())
+            {
+                GoToMain();
+            }
+        }
+
+        private bool CheckPermissions()
+        {
+            if (Build.VERSION.SdkInt >= BuildVersionCodes.M && CheckSelfPermission(MP_WES) != Permission.Granted)
+            {
+                RequestPermissions(new string[] { MP_WES }, RPC);
+                return false;
+            }
+
+            PowerManager powerManager = GetSystemService(PowerService) as PowerManager;
+            if (powerManager != null)
+            {
+                if (!powerManager.IsIgnoringBatteryOptimizations(PackageName))
+                {
+                    Intent intent = new Intent(Android.Provider.Settings.ActionIgnoreBatteryOptimizationSettings);
+                    StartActivity(intent);
+                    return false;
+                }
+                
+            } else Core.Log.Error("Failed to get PowerManager");
+
+            return true;
         }
 
         private void GoToMain()
