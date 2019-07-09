@@ -7,6 +7,14 @@
     android:padding="16dp"
     android:background="@android:color/holo_red_dark">
 
+    <Button
+        android:text="Fix"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/btn_fix"
+        android:layout_gravity="right"
+        android:layout_alignParentRight="true" />
+
     <TextView
         android:text="Directory permission error"
         android:textAppearance="?android:attr/textAppearanceMedium"
@@ -16,13 +24,5 @@
         android:layout_alignParentLeft="true"
         android:layout_toLeftOf="@id/btn_fix"
         android:layout_centerVertical="true" />
-
-    <Button
-        android:text="Fix"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/btn_fix"
-        android:layout_gravity="right"
-        android:layout_alignParentRight="true" />
 
 </RelativeLayout>
