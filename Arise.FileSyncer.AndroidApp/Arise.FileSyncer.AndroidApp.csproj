@@ -145,7 +145,7 @@
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Arise.FileSyncer.Common">
-      <Version>1.0.79</Version>
+      <Version>1.0.0-CI-20190805-150509</Version>
     </PackageReference>
     <PackageReference Include="Microsoft.AppCenter.Analytics">
       <Version>2.1.1</Version>
