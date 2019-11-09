@@ -150,6 +150,7 @@ namespace Arise.FileSyncer.AndroidApp.Service
             Utility.FileCreateWriteStream = SyncerUtility.FileCreateWriteStream;
             Utility.FileCreateReadStream = SyncerUtility.FileCreateReadStream;
             Utility.DirectoryCreate = SyncerUtility.DirectoryCreate;
+            Utility.DirectoryDelete = SyncerUtility.DirectoryDelete;
 
             // Disable Timestamp and FileSetTime since its not supported
             SyncerPeer.SupportTimestamp = false;

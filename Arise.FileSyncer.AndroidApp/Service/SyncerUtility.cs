@@ -146,5 +146,20 @@ namespace Arise.FileSyncer.AndroidApp.Service
 
             return true;
         }
+
+        public static bool DirectoryDelete(Guid profileId, string _, string relativePath)
+        {
+            try
+            {
+                var dir = FileUtility.GetDocumentFile(profileId, relativePath, true, false);
+                if (dir == null) return true;
+                return dir.Delete();
+            }
+            catch (Exception ex)
+            {
+                Log.Warning(LogName + ": exception when deleting directory. MSG: " + ex.Message);
+                return false;
+            }
+        }
     }
 }
