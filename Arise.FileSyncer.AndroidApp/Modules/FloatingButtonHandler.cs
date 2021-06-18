@@ -1,8 +1,8 @@
-﻿using System;
-using Android.Support.Design.Widget;
+using System;
 using Android.Views;
 using Android.Views.Animations;
 using Arise.FileSyncer.AndroidApp.Activities;
+using Google.Android.Material.FloatingActionButton;
 
 namespace Arise.FileSyncer.AndroidApp.Modules
 {

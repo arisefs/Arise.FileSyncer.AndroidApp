@@ -3,12 +3,13 @@ using Android.App;
 using Android.Content;
 using Android.OS;
 using Android.Provider;
-using Android.Support.Design.Widget;
-using Android.Support.V7.App;
 using Android.Views;
 using Android.Widget;
+using AndroidX.AppCompat.App;
 using Arise.FileSyncer.AndroidApp.Helpers;
-using Toolbar = Android.Support.V7.Widget.Toolbar;
+using Google.Android.Material.Snackbar;
+using Google.Android.Material.TextField;
+using Toolbar = AndroidX.AppCompat.Widget.Toolbar;
 using Uri = Android.Net.Uri;
 
 namespace Arise.FileSyncer.AndroidApp.Activities

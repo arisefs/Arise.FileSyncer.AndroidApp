@@ -6,7 +6,7 @@ using Android.OS;
 using Arise.FileSyncer.Common;
 using Arise.FileSyncer.Core;
 using Arise.FileSyncer.Core.FileSync;
-using Microsoft.AppCenter.Analytics;
+//using Microsoft.AppCenter.Analytics;
 
 namespace Arise.FileSyncer.AndroidApp.Service
 {
@@ -130,7 +130,7 @@ namespace Arise.FileSyncer.AndroidApp.Service
                     { "Message", message }
                 };
 
-                Analytics.TrackEvent("Internal Error", properties);
+                //Analytics.TrackEvent("Internal Error", properties);
                 Android.Util.Log.Error(Constants.TAG, $"{TAG}: {message}");
             };
 

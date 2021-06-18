@@ -1,12 +1,10 @@
 using System;
-
 using Android.App;
 using Android.Content;
 using Android.Runtime;
-
-using Microsoft.AppCenter;
-using Microsoft.AppCenter.Analytics;
-using Microsoft.AppCenter.Crashes;
+//using Microsoft.AppCenter;
+//using Microsoft.AppCenter.Analytics;
+//using Microsoft.AppCenter.Crashes;
 
 namespace Arise.FileSyncer.AndroidApp
 {
@@ -25,7 +23,7 @@ namespace Arise.FileSyncer.AndroidApp
 
             AppContext = ApplicationContext;
 
-            AppCenter.Start("cbc0d21c-7bce-4f58-ba64-9e538dcca5a0", typeof(Analytics), typeof(Crashes));
+            //AppCenter.Start("cbc0d21c-7bce-4f58-ba64-9e538dcca5a0", typeof(Analytics), typeof(Crashes));
         }
     }
 }

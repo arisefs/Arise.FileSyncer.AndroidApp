@@ -1,9 +1,10 @@
 using System;
 using System.Threading.Tasks;
 using Android.OS;
-using Android.Support.V4.App;
 using Android.Views;
 using Android.Widget;
+using AndroidX.AppCompat.App;
+using AndroidX.Fragment.App;
 using Arise.FileSyncer.AndroidApp.Service;
 
 namespace Arise.FileSyncer.AndroidApp.Fragments
@@ -171,7 +172,7 @@ namespace Arise.FileSyncer.AndroidApp.Fragments
             if (dialogOpen) return;
             dialogOpen = true;
 
-            var alert = new Android.Support.V7.App.AlertDialog.Builder(Activity);
+            var alert = new AlertDialog.Builder(Activity);
             alert.SetTitle(titleRes);
 
             View alertView = Activity.LayoutInflater.Inflate(Resource.Layout.dialog_settings_number, null);

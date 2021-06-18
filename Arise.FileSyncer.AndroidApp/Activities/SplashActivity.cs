@@ -3,7 +3,7 @@ using Android.App;
 using Android.Content;
 using Android.Content.PM;
 using Android.OS;
-using Android.Support.V7.App;
+using AndroidX.AppCompat.App;
 using Arise.FileSyncer.AndroidApp.Service;
 
 namespace Arise.FileSyncer.AndroidApp.Activities
@@ -69,7 +69,7 @@ namespace Arise.FileSyncer.AndroidApp.Activities
                     return false;
                 }
                 
-            } else Core.Log.Error("Failed to get PowerManager");
+            } else Log.Error("Failed to get PowerManager");
 
             return true;
         }

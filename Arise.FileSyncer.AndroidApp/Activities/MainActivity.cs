@@ -1,21 +1,21 @@
 using System;
 using Android.Content;
 using Android.OS;
-using Android.Support.Design.Widget;
-using Android.Support.V4.View;
-using Android.Support.V4.Widget;
-using Android.Support.V7.App;
 using Android.Views;
 using Android.Widget;
+using AndroidX.AppCompat.App;
+using AndroidX.Core.View;
+using AndroidX.DrawerLayout.Widget;
+using AndroidX.Fragment.App;
 using Arise.FileSyncer.AndroidApp.Fragments;
 using Arise.FileSyncer.AndroidApp.Modules;
 using Arise.FileSyncer.AndroidApp.Service;
 using Arise.FileSyncer.Common;
 using Arise.FileSyncer.Core;
-using ActionBarDrawerToggle = Android.Support.V7.App.ActionBarDrawerToggle;
-using Fragment = Android.Support.V4.App.Fragment;
-using FragmentTransaction = Android.Support.V4.App.FragmentTransaction;
-using Toolbar = Android.Support.V7.Widget.Toolbar;
+using Google.Android.Material.Navigation;
+
+using ActionBarDrawerToggle = AndroidX.AppCompat.App.ActionBarDrawerToggle;
+using Toolbar = AndroidX.AppCompat.Widget.Toolbar;
 
 namespace Arise.FileSyncer.AndroidApp.Activities
 {

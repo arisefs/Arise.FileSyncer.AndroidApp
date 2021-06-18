@@ -1,19 +1,16 @@
 using System;
-using System.IO;
 using Android.App;
 using Android.Content;
 using Android.OS;
-using Android.Provider;
-using Android.Support.Design.Widget;
-using Android.Support.V7.App;
 using Android.Views;
 using Android.Widget;
+using AndroidX.AppCompat.App;
 using Arise.FileSyncer.AndroidApp.Helpers;
 using Arise.FileSyncer.AndroidApp.Service;
 using Arise.FileSyncer.Core;
-using AlertDialog = Android.Support.V7.App.AlertDialog;
-using Toolbar = Android.Support.V7.Widget.Toolbar;
-using Uri = Android.Net.Uri;
+using Google.Android.Material.Snackbar;
+using AlertDialog = AndroidX.AppCompat.App.AlertDialog;
+using Toolbar = AndroidX.AppCompat.Widget.Toolbar;
 
 namespace Arise.FileSyncer.AndroidApp.Activities
 {

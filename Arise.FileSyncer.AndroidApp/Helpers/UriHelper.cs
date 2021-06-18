@@ -11,7 +11,6 @@ namespace Arise.FileSyncer.AndroidApp.Helpers
         /// </summary>
         /// <param name="context"></param>
         /// <param name="uri"></param>
-        /// <param name="path"></param>
         /// <param name="isReceive"></param>
         public static void SaveUriWithPermissions(Context context, Uri uri, Guid key, bool isReceive)
         {
@@ -28,7 +27,6 @@ namespace Arise.FileSyncer.AndroidApp.Helpers
         /// Removes a URI and permissions
         /// </summary>
         /// <param name="context"></param>
-        /// <param name="path"></param>
         public static void RemoveUriWithPermissions(Context context, Guid key)
         {
             const ActivityFlags flags = ActivityFlags.GrantReadUriPermission | ActivityFlags.GrantWriteUriPermission;
