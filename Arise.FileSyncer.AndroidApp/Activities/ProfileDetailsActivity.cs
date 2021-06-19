@@ -9,12 +9,12 @@ using Arise.FileSyncer.AndroidApp.Helpers;
 using Arise.FileSyncer.AndroidApp.Service;
 using Arise.FileSyncer.Core;
 using Google.Android.Material.Snackbar;
+using Google.Android.Material.AppBar;
 using AlertDialog = AndroidX.AppCompat.App.AlertDialog;
-using Toolbar = AndroidX.AppCompat.Widget.Toolbar;
 
 namespace Arise.FileSyncer.AndroidApp.Activities
 {
-    [Activity(Label = "@string/act_profile_details", Theme = "@style/AppTheme.NoActionBar")]
+    [Activity(Label = "@string/act_profile_details", Theme = "@style/Theme.MyApplication.NoActionBar")]
     public class ProfileDetailsActivity : AppCompatActivity
     {
         private const int DirectorySelectRC = 1;
@@ -29,7 +29,7 @@ namespace Arise.FileSyncer.AndroidApp.Activities
             SetContentView(Resource.Layout.activity_profile_details);
 
             // Toolbar setup
-            var toolbar = FindViewById<Toolbar>(Resource.Id.toolbar);
+            var toolbar = FindViewById<MaterialToolbar>(Resource.Id.toolbar);
             SetSupportActionBar(toolbar);
             SupportActionBar.SetDisplayHomeAsUpEnabled(true);
             SupportActionBar.SetDisplayShowTitleEnabled(true);

@@ -10,7 +10,7 @@ using Arise.FileSyncer.Core.Helpers;
 
 namespace Arise.FileSyncer.AndroidApp.Activities
 {
-    [Activity(Label = "@string/act_profile_edit", Theme = "@style/AppTheme.NoActionBar")]
+    [Activity(Label = "@string/act_profile_edit", Theme = "@style/Theme.MyApplication.NoActionBar")]
     public class ProfileEditActivity : ProfileEditorActivity
     {
         private Guid profileId = Guid.Empty;

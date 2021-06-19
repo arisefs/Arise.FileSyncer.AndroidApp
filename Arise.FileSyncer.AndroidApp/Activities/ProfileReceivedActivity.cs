@@ -11,7 +11,7 @@ using Arise.FileSyncer.Core.Helpers;
 
 namespace Arise.FileSyncer.AndroidApp.Activities
 {
-    [Activity(Label = "@string/act_profile_received", Theme = "@style/AppTheme.NoActionBar")]
+    [Activity(Label = "@string/act_profile_received", Theme = "@style/Theme.MyApplication.NoActionBar")]
     public class ProfileReceivedActivity : ProfileEditorActivity
     {
         private Args args;

@@ -8,7 +8,7 @@ using Arise.FileSyncer.Core.Helpers;
 
 namespace Arise.FileSyncer.AndroidApp.Activities
 {
-    [Activity(Label = "@string/act_profile_new", Theme = "@style/AppTheme.NoActionBar")]
+    [Activity(Label = "@string/act_profile_new", Theme = "@style/Theme.MyApplication.NoActionBar")]
     public class ProfileNewActivity : ProfileEditorActivity
     {
         protected override void OnEditDone()

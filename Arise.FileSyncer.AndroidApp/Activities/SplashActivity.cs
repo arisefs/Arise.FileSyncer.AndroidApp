@@ -8,7 +8,7 @@ using Arise.FileSyncer.AndroidApp.Service;
 
 namespace Arise.FileSyncer.AndroidApp.Activities
 {
-    [Activity(Label = "@string/app_name", Theme = "@style/AppTheme.Splash", MainLauncher = true)]
+    [Activity(Label = "@string/app_name", Theme = "@style/Theme.MyApplication.Splash", MainLauncher = true)]
     public class SplashActivity : AppCompatActivity
     {
         private const string MP_WES = Manifest.Permission.WriteExternalStorage;
@@ -59,17 +59,16 @@ namespace Arise.FileSyncer.AndroidApp.Activities
                 return false;
             }
 
-            PowerManager powerManager = GetSystemService(PowerService) as PowerManager;
-            if (powerManager != null)
+            if (GetSystemService(PowerService) is PowerManager powerManager)
             {
                 if (!powerManager.IsIgnoringBatteryOptimizations(PackageName))
                 {
-                    Intent intent = new Intent(Android.Provider.Settings.ActionIgnoreBatteryOptimizationSettings);
+                    var intent = new Intent(Android.Provider.Settings.ActionIgnoreBatteryOptimizationSettings);
                     StartActivity(intent);
                     return false;
                 }
-                
-            } else Log.Error("Failed to get PowerManager");
+            }
+            else Log.Error("Failed to get PowerManager");
 
             return true;
         }

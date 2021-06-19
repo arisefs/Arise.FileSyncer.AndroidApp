@@ -9,7 +9,7 @@ using AndroidX.AppCompat.App;
 using Arise.FileSyncer.AndroidApp.Helpers;
 using Google.Android.Material.Snackbar;
 using Google.Android.Material.TextField;
-using Toolbar = AndroidX.AppCompat.Widget.Toolbar;
+using Google.Android.Material.AppBar;
 using Uri = Android.Net.Uri;
 
 namespace Arise.FileSyncer.AndroidApp.Activities
@@ -51,7 +51,7 @@ namespace Arise.FileSyncer.AndroidApp.Activities
             }
 
             // Toolbar setup
-            var toolbar = FindViewById<Toolbar>(Resource.Id.toolbar);
+            var toolbar = FindViewById<MaterialToolbar>(Resource.Id.toolbar);
             SetSupportActionBar(toolbar);
             SupportActionBar.SetDisplayHomeAsUpEnabled(true);
             SupportActionBar.SetDisplayShowTitleEnabled(true);

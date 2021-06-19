@@ -1,26 +1,29 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="horizontal"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:padding="16dp"
-    android:background="@android:color/holo_red_dark">
+    android:padding="@dimen/activity_padding"
+    android:background="@color/error">
 
     <Button
         android:text="Fix"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:id="@+id/btn_fix"
         android:layout_gravity="right"
-        android:layout_alignParentRight="true" />
+        android:layout_alignParentRight="true" 
+        android:id="@+id/btn_fix"
+        android:textColor="@color/text_dark_primary"
+        app:backgroundTint="@color/error_button" />
 
     <TextView
         android:text="Directory permission error"
         android:textAppearance="?android:attr/textAppearanceMedium"
+        android:textColor="@color/text_light_primary"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textColor="@color/primary_text_light"
         android:layout_alignParentLeft="true"
         android:layout_toLeftOf="@id/btn_fix"
         android:layout_centerVertical="true" />

@@ -34,7 +34,7 @@
             android:hint="@string/ui_pnew_directory"
             android:id="@+id/edit_directory"
             android:drawableRight="@drawable/baseline_folder_white_24"
-            android:drawableTint="@color/icon_dark_inactive"
+            android:drawableTint="@color/icon_inactive"
             android:clickable="true" />
     </com.google.android.material.textfield.TextInputLayout>
 

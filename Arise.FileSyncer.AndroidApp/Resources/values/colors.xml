@@ -1,22 +1,31 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
   <color name="primary">#254566</color>
-  <color name="primaryDark">#001e3b</color>
-  <color name="primaryLight">#537094</color>
-  <color name="secondary">#2e7d32</color>
-  <color name="secondaryDark">#005005</color>
-  <color name="secondaryLigth">#60ad5e</color>
+  <color name="primaryDark">#1B3653</color>
+  <color name="primaryLight">#96A9BC</color>
+  <color name="secondary">#198066</color>
+  <color name="secondaryDark">#0E6349</color>
+  <color name="secondaryLigth">#8CC0B3</color>
+
+  <color name="error">#B00020</color>
+  <color name="error_button">#DEDEDE</color>
+  <color name="divider">#42000000</color>
+  <color name="appbar">@color/primary</color>
   
   <color name="icon_light">#DEFFFFFF</color>
   <color name="icon_light_inactive">#99FFFFFF</color>
   <color name="icon_dark">#DE000000</color>
   <color name="icon_dark_inactive">#99000000</color>
-  <color name="icon_red">#B00020</color>
-
-  <color name="primary_text">#DE000000</color>
-  <color name="secondary_text">#99000000</color>
-  <color name="primary_text_light">#DEFFFFFF</color>
-  <color name="secondary_text_light">#99FFFFFF</color>
   
-  <color name="divider">#42000000</color>
+  <color name="icon">@color/icon_dark</color>
+  <color name="icon_inactive">@color/icon_dark_inactive</color>
+  <color name="icon_red">@color/error</color>
+
+  <color name="text_dark_primary">#DE000000</color>
+  <color name="text_dark_secondary">#99000000</color>
+  <color name="text_light_primary">#DEFFFFFF</color>
+  <color name="text_light_secondary">#99FFFFFF</color>
+
+  <color name="primary_text">@color/text_dark_primary</color>
+  <color name="secondary_text">@color/text_dark_secondary</color>
 </resources>

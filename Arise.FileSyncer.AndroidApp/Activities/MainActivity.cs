@@ -13,13 +13,12 @@ using Arise.FileSyncer.AndroidApp.Service;
 using Arise.FileSyncer.Common;
 using Arise.FileSyncer.Core;
 using Google.Android.Material.Navigation;
-
+using Google.Android.Material.AppBar;
 using ActionBarDrawerToggle = AndroidX.AppCompat.App.ActionBarDrawerToggle;
-using Toolbar = AndroidX.AppCompat.Widget.Toolbar;
 
 namespace Arise.FileSyncer.AndroidApp.Activities
 {
-    [Android.App.Activity(Label = "@string/act_main", Theme = "@style/AppTheme.NoActionBar.TransStatus")]
+    [Android.App.Activity(Label = "@string/act_main", Theme = "@style/Theme.MyApplication.NoActionBar")]
     public class MainActivity : AppCompatActivity, NavigationView.IOnNavigationItemSelectedListener
     {
         protected int navId = Resource.Id.nav_profiles;
@@ -32,7 +31,7 @@ namespace Arise.FileSyncer.AndroidApp.Activities
             base.OnCreate(savedInstanceState);
 
             SetContentView(Resource.Layout.activity_main);
-            Toolbar toolbar = FindViewById<Toolbar>(Resource.Id.toolbar);
+            var toolbar = FindViewById<MaterialToolbar>(Resource.Id.toolbar);
             SetSupportActionBar(toolbar);
 
             floatingButtonHandler = new FloatingButtonHandler(this, OnFabClicked);
@@ -141,7 +140,7 @@ namespace Arise.FileSyncer.AndroidApp.Activities
 
         public override bool OnCreateOptionsMenu(IMenu menu)
         {
-            MenuInflater.Inflate(Resource.Menu.menu_main, menu);
+            //MenuInflater.Inflate(Resource.Menu.menu_main, menu);
             return true;
         }
 
