@@ -45,10 +45,10 @@ namespace Arise.FileSyncer.AndroidApp.Activities
 
         private void TryGoToMain()
         {
-            if (CheckPermissions())
-            {
-                GoToMain();
-            }
+            if (!CheckPermissions()) return;
+            if (!CheckBatteryOptimizations()) return;
+
+            GoToMain();
         }
 
         private bool CheckPermissions()
@@ -59,6 +59,11 @@ namespace Arise.FileSyncer.AndroidApp.Activities
                 return false;
             }
 
+            return true;
+        }
+
+        private bool CheckBatteryOptimizations()
+        {
             if (GetSystemService(PowerService) is PowerManager powerManager)
             {
                 if (!powerManager.IsIgnoringBatteryOptimizations(PackageName))
