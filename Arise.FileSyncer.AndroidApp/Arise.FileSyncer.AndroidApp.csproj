@@ -6,9 +6,9 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Arise.FileSyncer.Common" Version="1.0.0" />
+    <PackageReference Include="Arise.FileSyncer.Common" Version="1.0.1" />
     <PackageReference Include="Xamarin.AndroidX.Arch.Core.Runtime" Version="2.1.0.8" />
-    <PackageReference Include="Xamarin.Google.Android.Material" Version="1.3.0.1" />
+    <PackageReference Include="Xamarin.Google.Android.Material" Version="1.4.0" />
   </ItemGroup>
 
 </Project>
