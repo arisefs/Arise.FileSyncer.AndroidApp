@@ -5,6 +5,7 @@ using Android.OS;
 using Android.Provider;
 using Android.Views;
 using Android.Widget;
+using Android.Text;
 using AndroidX.AppCompat.App;
 using Arise.FileSyncer.AndroidApp.Helpers;
 using Google.Android.Material.Snackbar;
@@ -38,7 +39,7 @@ namespace Arise.FileSyncer.AndroidApp.Activities
 
             // Load layout
             SetContentView(Resource.Layout.activity_profile_editor);
-
+            
             // Reset values
             dirClicked = false;
             selectedUri = null;
@@ -56,7 +57,7 @@ namespace Arise.FileSyncer.AndroidApp.Activities
             SupportActionBar.SetDisplayHomeAsUpEnabled(true);
             SupportActionBar.SetDisplayShowTitleEnabled(true);
             SupportActionBar.SetHomeButtonEnabled(true);
-
+            
             // Name
             editNameLayout = FindViewById<TextInputLayout>(Resource.Id.edit_name_layout);
             editName = FindViewById<TextInputEditText>(Resource.Id.edit_name);
@@ -73,7 +74,7 @@ namespace Arise.FileSyncer.AndroidApp.Activities
                 if (e.HasFocus && !dirClicked) SelectDirectry();
                 dirClicked = e.HasFocus;
             };
-
+            
             // Checkboxes
             cbAllowSend = FindViewById<CheckBox>(Resource.Id.cb_allow_send);
             cbAllowReceive = FindViewById<CheckBox>(Resource.Id.cb_allow_receive);
@@ -145,12 +146,12 @@ namespace Arise.FileSyncer.AndroidApp.Activities
             Snackbar.Make(view, error, Snackbar.LengthLong).Show();
         }
 
-        private void EditName_AfterTextChanged(object sender, Android.Text.AfterTextChangedEventArgs e)
+        private void EditName_AfterTextChanged(object sender, AfterTextChangedEventArgs e)
         {
             if (editName.Text.Length > 0) editNameLayout.ErrorEnabled = false;
         }
 
-        private void EditDirectory_AfterTextChanged(object sender, Android.Text.AfterTextChangedEventArgs e)
+        private void EditDirectory_AfterTextChanged(object sender, AfterTextChangedEventArgs e)
         {
             if (editDirectory.Text.Length > 0) editDirectoryLayout.ErrorEnabled = false;
         }

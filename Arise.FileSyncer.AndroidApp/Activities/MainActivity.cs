@@ -12,8 +12,8 @@ using Arise.FileSyncer.AndroidApp.Modules;
 using Arise.FileSyncer.AndroidApp.Service;
 using Arise.FileSyncer.Common;
 using Arise.FileSyncer.Core;
-using Google.Android.Material.Navigation;
 using Google.Android.Material.AppBar;
+using Google.Android.Material.Navigation;
 using ActionBarDrawerToggle = AndroidX.AppCompat.App.ActionBarDrawerToggle;
 
 namespace Arise.FileSyncer.AndroidApp.Activities

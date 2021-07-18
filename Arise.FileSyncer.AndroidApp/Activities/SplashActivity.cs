@@ -46,7 +46,7 @@ namespace Arise.FileSyncer.AndroidApp.Activities
         private void TryGoToMain()
         {
             if (!CheckPermissions()) return;
-            if (!CheckBatteryOptimizations()) return;
+            //if (!CheckBatteryOptimizations()) return;
 
             GoToMain();
         }
