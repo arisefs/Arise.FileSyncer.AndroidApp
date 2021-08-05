@@ -15,7 +15,7 @@ namespace Arise.FileSyncer.AndroidApp.Activities
         {
             string correctPath = PathHelper.GetCorrect(editDirectory.Text, true);
 
-            SyncProfile profile = new SyncProfile.Creator()
+            var profile = new SyncProfile()
             {
                 Key = Guid.NewGuid(),
                 Name = editName.Text,
@@ -28,7 +28,7 @@ namespace Arise.FileSyncer.AndroidApp.Activities
 
             Guid profileId = Guid.NewGuid();
 
-            if (SyncerService.Instance.Peer.AddProfile(profileId, profile))
+            if (SyncerService.Instance.Peer.Profiles.AddProfile(profileId, profile))
             {
                 // Save URI and permissions
                 UriHelper.SaveUriWithPermissions(this, selectedUri, profileId, cbAllowReceive.Checked);

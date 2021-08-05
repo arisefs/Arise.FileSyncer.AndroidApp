@@ -1,4 +1,5 @@
 using System;
+using System.Text.Json;
 using Android.Content;
 using Android.OS;
 using Android.Views;
@@ -10,7 +11,6 @@ using AndroidX.Fragment.App;
 using Arise.FileSyncer.AndroidApp.Fragments;
 using Arise.FileSyncer.AndroidApp.Modules;
 using Arise.FileSyncer.AndroidApp.Service;
-using Arise.FileSyncer.Common;
 using Arise.FileSyncer.Core;
 using Google.Android.Material.AppBar;
 using Google.Android.Material.Navigation;
@@ -76,7 +76,7 @@ namespace Arise.FileSyncer.AndroidApp.Activities
         {
             base.OnStart();
 
-            SyncerService.Instance.Peer.ProfileReceived += Peer_ProfileReceived;
+            SyncerService.Instance.Peer.Profiles.ProfileReceived += Peer_ProfileReceived;
 
             SyncerJob.Schedule(this, false);
         }
@@ -92,7 +92,7 @@ namespace Arise.FileSyncer.AndroidApp.Activities
         {
             try
             {
-                SyncerService.Instance.Peer.ProfileReceived -= Peer_ProfileReceived;
+                SyncerService.Instance.Peer.Profiles.ProfileReceived -= Peer_ProfileReceived;
             }
             catch (Exception ex)
             {
@@ -219,7 +219,7 @@ namespace Arise.FileSyncer.AndroidApp.Activities
         {
             var args = new ProfileReceivedActivity.Args(e);
             var intent = new Intent(this, typeof(ProfileReceivedActivity));
-            intent.PutExtra(Constants.Keys.ProfileReceivedArgsJson, Json.Serialize(args));
+            intent.PutExtra(Constants.Keys.ProfileReceivedArgsJson, JsonSerializer.Serialize(args));
             RunOnUiThread(() => { StartActivity(intent); });
         }
 

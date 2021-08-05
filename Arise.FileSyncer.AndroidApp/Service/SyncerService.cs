@@ -1,11 +1,13 @@
 using System;
 using System.Collections.Generic;
 using System.Threading;
+using System.Threading.Tasks;
 using Android.Content;
 using Android.OS;
 using Arise.FileSyncer.Common;
 using Arise.FileSyncer.Core;
 using Arise.FileSyncer.Core.FileSync;
+using Arise.FileSyncer.Core.Peer;
 //using Microsoft.AppCenter.Analytics;
 
 namespace Arise.FileSyncer.AndroidApp.Service
@@ -14,19 +16,8 @@ namespace Arise.FileSyncer.AndroidApp.Service
     {
         private const string TAG = "SyncerService";
 
-        private static volatile SyncerService instance = null;
-        public static SyncerService Instance
-        {
-            get
-            {
-                if (instance == null)
-                {
-                    instance = new SyncerService(MainApplication.AppContext);
-                }
-
-                return instance;
-            }
-        }
+        private static readonly Lazy<SyncerService> instance = new(() => new SyncerService(MainApplication.AppContext), true);
+        public static SyncerService Instance => instance.Value;
 
         public SyncerConfig Config { get; }
         public SyncerPeer Peer { get; }
@@ -49,16 +40,16 @@ namespace Arise.FileSyncer.AndroidApp.Service
 
             // Load config
             Config = new SyncerConfig();
-            LoadResult loadResult = Config.Load(CreatePeerSettings);
+            LoadResult loadResult = Config.Load(CreatePeerSettings(), out var configData);
             if (loadResult != LoadResult.Loaded)
             {
                 if (loadResult == LoadResult.Created) Log.Info("Created new config");
-                if (Config.Save()) Log.Info("Saved config after create/upgrade");
+                if (Config.Save(configData)) Log.Info("Saved config after create/upgrade");
                 else Log.Error("Failed to save config after create/upgrade");
             }
 
             // Load key
-            keyConfig = new KeyConfig(1024);
+            keyConfig = new KeyConfig(); // TODO?: keysize: 1024
             loadResult = keyConfig.Load();
             if (loadResult != LoadResult.Loaded)
             {
@@ -67,15 +58,20 @@ namespace Arise.FileSyncer.AndroidApp.Service
                 else Log.Error("Failed to save key after create/upgrade");
             }
 
-            Peer = new SyncerPeer(Config.PeerSettings);
-            listener = new NetworkListener(Config, keyConfig, Peer.AddConnection);
+            // Create managers from loaded config
+            DeviceKeyManager deviceKeyManager = new(configData.DeviceKeys);
+            ProfileManager profileManager = new(configData.Profiles);
+
+            // Load syncing and connection handler classes
+            Peer = new SyncerPeer(configData.PeerSettings, deviceKeyManager, profileManager);
+            listener = new NetworkListener(Peer, keyConfig, Config.ListenerAddressFamily);
             Discovery = new NetworkDiscovery(Config, Peer, listener);
 
             // Subscribe to save events
-            Peer.NewPairAdded += (s, e) => Config.Save();
-            Peer.ProfileAdded += (s, e) => Config.Save();
-            Peer.ProfileRemoved += (s, e) => Config.Save();
-            Peer.ProfileChanged += (s, e) => Config.Save();
+            Peer.NewPairAdded += (s, e) => Config.Save(Peer);
+            Peer.Profiles.ProfileAdded += (s, e) => Config.Save(Peer);
+            Peer.Profiles.ProfileRemoved += (s, e) => Config.Save(Peer);
+            Peer.Profiles.ProfileChanged += (s, e) => Task.Run(() => Config.Save(Peer));
             Peer.FileBuilt += Peer_FileBuilt;
 
             // Auto accept pair requests
@@ -94,7 +90,7 @@ namespace Arise.FileSyncer.AndroidApp.Service
 
         private static SyncerPeerSettings CreatePeerSettings()
         {
-            return new SyncerPeerSettings(Guid.NewGuid(), $"{Build.Manufacturer} {Build.Model}");
+            return new SyncerPeerSettings(Guid.NewGuid(), $"{Build.Manufacturer} {Build.Model}", false);
         }
 
         public void Run()
@@ -152,8 +148,7 @@ namespace Arise.FileSyncer.AndroidApp.Service
             Utility.DirectoryCreate = SyncerUtility.DirectoryCreate;
             Utility.DirectoryDelete = SyncerUtility.DirectoryDelete;
 
-            // Disable Timestamp and FileSetTime since its not supported
-            SyncerPeer.SupportTimestamp = false;
+            // Disable FileSetTime since its not supported
             Utility.FileSetTime = (_a, _b, _c, _d, _e) => false;
         }
 

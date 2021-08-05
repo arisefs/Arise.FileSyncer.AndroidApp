@@ -174,7 +174,7 @@ namespace Arise.FileSyncer.AndroidApp.Activities
         {
             dirClicked = true;
 
-            Intent directorySelectIntent = new Intent(Intent.ActionOpenDocumentTree);
+            var directorySelectIntent = new Intent(Intent.ActionOpenDocumentTree);
             directorySelectIntent.SetFlags(
                 ActivityFlags.GrantReadUriPermission |
                 ActivityFlags.GrantWriteUriPermission |

@@ -59,7 +59,7 @@ namespace Arise.FileSyncer.AndroidApp.Activities
             {
                 if (resultCode == Result.Ok)
                 {
-                    if (SyncerService.Instance.Peer.Settings.Profiles.TryGetValue(profileId, out var profile))
+                    if (SyncerService.Instance.Peer.Profiles.GetProfile(profileId, out var profile))
                     {
                         if (data.Data != null)
                         {
@@ -138,7 +138,7 @@ namespace Arise.FileSyncer.AndroidApp.Activities
 
         private void DeleteProfile()
         {
-            if (SyncerService.Instance.Peer.RemoveProfile(profileId))
+            if (SyncerService.Instance.Peer.Profiles.RemoveProfile(profileId))
             {
                 UriHelper.RemoveUriWithPermissions(this, profileId);
                 Finish();
@@ -148,7 +148,7 @@ namespace Arise.FileSyncer.AndroidApp.Activities
         private void UpdateViews()
         {
             // Fill out the profile details
-            if (SyncerService.Instance.Peer.Settings.Profiles.TryGetValue(profileId, out var profile))
+            if (SyncerService.Instance.Peer.Profiles.GetProfile(profileId, out var profile))
             {
                 var layout = FindViewById<LinearLayout>(Resource.Id.view_root);
                 layout.RemoveAllViews();

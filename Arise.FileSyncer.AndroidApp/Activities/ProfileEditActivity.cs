@@ -24,7 +24,7 @@ namespace Arise.FileSyncer.AndroidApp.Activities
             {
                 this.profileId = profileId;
 
-                if (SyncerService.Instance.Peer.Settings.Profiles.TryGetValue(profileId, out var profile))
+                if (SyncerService.Instance.Peer.Profiles.GetProfile(profileId, out var profile))
                 {
                     editName.Text = profile.Name;
                     editName.SetSelection(editName.Text.Length);
@@ -52,13 +52,13 @@ namespace Arise.FileSyncer.AndroidApp.Activities
 
         protected override void OnEditDone()
         {
-            if (!SyncerService.Instance.Peer.Settings.Profiles.TryGetValue(profileId, out var oldProfile))
+            if (!SyncerService.Instance.Peer.Profiles.GetProfile(profileId, out var oldProfile))
             {
                 OnError(Resource.String.error_profile_details_retrive);
                 return;
             }
 
-            SyncProfile profile = new SyncProfile.Creator(oldProfile)
+            var profile = new SyncProfile(oldProfile)
             {
                 Name = editName.Text,
                 RootDirectory = PathHelper.GetCorrect(editDirectory.Text, true),
@@ -67,7 +67,7 @@ namespace Arise.FileSyncer.AndroidApp.Activities
                 AllowDelete = cbAllowReceive.Checked && cbAllowDelete.Checked,
             };
 
-            if (SyncerService.Instance.Peer.UpdateProfile(profileId, profile))
+            if (SyncerService.Instance.Peer.Profiles.UpdateProfile(profileId, profile))
             {
                 if (selectedUri != null)
                 {

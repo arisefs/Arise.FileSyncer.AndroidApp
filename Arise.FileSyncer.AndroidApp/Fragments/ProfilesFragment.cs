@@ -24,12 +24,12 @@ namespace Arise.FileSyncer.AndroidApp.Fragments
             // Retreive profiles and setup events
             var service = SyncerService.Instance;
             // Subscribe to service events
-            service.Peer.ProfileAdded += Peer_ProfileAdded;
-            service.Peer.ProfileRemoved += Peer_ProfileRemoved;
-            service.Peer.ProfileChanged += Peer_ProfileChanged;
+            service.Peer.Profiles.ProfileAdded += Peer_ProfileAdded;
+            service.Peer.Profiles.ProfileRemoved += Peer_ProfileRemoved;
+            service.Peer.Profiles.ProfileChanged += Peer_ProfileChanged;
 
             // Fill profile adapter's list
-            foreach (var profileKV in service.Config.PeerSettings.Profiles)
+            foreach (var profileKV in service.Peer.Profiles.Snapshot())
             {
                 adapter.Profiles.Add(new SyncProfileContainer(profileKV.Key, profileKV.Value));
             }
@@ -44,9 +44,9 @@ namespace Arise.FileSyncer.AndroidApp.Fragments
 
             try
             {
-                service.Peer.ProfileAdded -= Peer_ProfileAdded;
-                service.Peer.ProfileRemoved -= Peer_ProfileRemoved;
-                service.Peer.ProfileChanged -= Peer_ProfileChanged;
+                service.Peer.Profiles.ProfileAdded -= Peer_ProfileAdded;
+                service.Peer.Profiles.ProfileRemoved -= Peer_ProfileRemoved;
+                service.Peer.Profiles.ProfileChanged -= Peer_ProfileChanged;
             }
             catch (Exception ex)
             {
