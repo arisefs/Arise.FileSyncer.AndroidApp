@@ -30,13 +30,4 @@
 
     </LinearLayout>
 
-    <ProgressBar
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:id="@+id/sync_progress"
-        style="?android:attr/progressBarStyleHorizontal"
-        android:max="100"
-        android:progress="45"
-        android:indeterminate="true" />
-
 </LinearLayout>
