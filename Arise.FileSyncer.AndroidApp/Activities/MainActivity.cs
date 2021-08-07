@@ -23,52 +23,53 @@ namespace Arise.FileSyncer.AndroidApp.Activities
     {
         protected int navId = Resource.Id.nav_profiles;
 
+        private DrawerLayout drawerLayout;
         private FloatingButtonHandler floatingButtonHandler;
-        private ProgressBarUpdater progressBarUpdater;
 
         protected override void OnCreate(Bundle savedInstanceState)
         {
             base.OnCreate(savedInstanceState);
 
             SetContentView(Resource.Layout.activity_main);
-            var toolbar = FindViewById<MaterialToolbar>(Resource.Id.toolbar);
-            SetSupportActionBar(toolbar);
+            InitializeToolbar();
+            floatingButtonHandler = new(this, OnFabClicked);
 
-            floatingButtonHandler = new FloatingButtonHandler(this, OnFabClicked);
-
-            DrawerLayout drawer = FindViewById<DrawerLayout>(Resource.Id.drawer_layout);
-            ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(this, drawer, toolbar, Resource.String.navigation_drawer_open, Resource.String.navigation_drawer_close);
-            drawer.AddDrawerListener(toggle);
-            toggle.SyncState();
-
-            // Load saved state
             if (savedInstanceState != null)
             {
                 navId = savedInstanceState.GetInt("navId", navId);
             }
 
-            NavigationView navigationView = FindViewById<NavigationView>(Resource.Id.nav_view);
+            InitializeNavigation();
+        }
+
+        private void InitializeToolbar()
+        {
+            var toolbar = FindViewById<MaterialToolbar>(Resource.Id.toolbar);
+            SetSupportActionBar(toolbar);
+
+            drawerLayout = FindViewById<DrawerLayout>(Resource.Id.drawer_layout);
+            var toggle = new ActionBarDrawerToggle(this, drawerLayout, toolbar, Resource.String.navigation_drawer_open, Resource.String.navigation_drawer_close);
+            drawerLayout.AddDrawerListener(toggle);
+            toggle.SyncState();
+        }
+
+        private void InitializeNavigation()
+        {
+            var navigationView = FindViewById<NavigationView>(Resource.Id.nav_view);
             navigationView.SetNavigationItemSelectedListener(this);
             SelectMenuItemByNavId(navigationView);
-
-            var progressBar = navigationView.GetHeaderView(0).FindViewById<ProgressBar>(Resource.Id.sync_progress);
-            progressBarUpdater = new ProgressBarUpdater(this, progressBar, UpdateGlobalProgressBar);
-
             SwitchToFragment(GetFragmentByNavId(navId));
         }
 
         protected override void OnDestroy()
         {
             floatingButtonHandler.Dispose();
-            progressBarUpdater.Dispose();
-
             base.OnDestroy();
         }
 
         protected override void OnSaveInstanceState(Bundle outState)
         {
             outState.PutInt("navId", navId);
-
             base.OnSaveInstanceState(outState);
         }
 
@@ -76,8 +77,7 @@ namespace Arise.FileSyncer.AndroidApp.Activities
         {
             base.OnStart();
 
-            SyncerService.Instance.Peer.Profiles.ProfileReceived += Peer_ProfileReceived;
-
+            SyncerService.Instance.Peer.Profiles.ProfileReceived += OnProfileReceived;
             SyncerJob.Schedule(this, false);
         }
 
@@ -92,7 +92,7 @@ namespace Arise.FileSyncer.AndroidApp.Activities
         {
             try
             {
-                SyncerService.Instance.Peer.Profiles.ProfileReceived -= Peer_ProfileReceived;
+                SyncerService.Instance.Peer.Profiles.ProfileReceived -= OnProfileReceived;
             }
             catch (Exception ex)
             {
@@ -102,27 +102,12 @@ namespace Arise.FileSyncer.AndroidApp.Activities
             base.OnStop();
         }
 
-        public override void OnBackPressed()
-        {
-            DrawerLayout drawer = FindViewById<DrawerLayout>(Resource.Id.drawer_layout);
-            if (drawer.IsDrawerOpen(GravityCompat.Start))
-            {
-                drawer.CloseDrawer(GravityCompat.Start);
-            }
-            else
-            {
-                base.OnBackPressed();
-            }
-        }
-
         private void OnFabClicked(View view)
         {
             switch (navId)
             {
                 case Resource.Id.nav_profiles:
-                    {
-                        StartActivity(new Intent(this, typeof(ProfileNewActivity)));
-                    }
+                    StartActivity(new Intent(this, typeof(ProfileNewActivity)));
                     break;
                 case Resource.Id.nav_connections:
                     {
@@ -132,21 +117,28 @@ namespace Arise.FileSyncer.AndroidApp.Activities
                         floatingButtonHandler.Rotate(switched);
                         var message = switched ? Resource.String.msg_pairing_enabled : Resource.String.msg_pairing_disabled;
                         Toast.MakeText(this, message, ToastLength.Short).Show();
+                        break;
                     }
+                default:
+                    Android.Util.Log.Debug(Constants.TAG, $"{this}: FAB clicked while on an unhandled nav page");
                     break;
-                default: break;
             }
         }
 
-        public override bool OnCreateOptionsMenu(IMenu menu)
+        private void OnProfileReceived(object sender, ProfileReceivedEventArgs e)
         {
-            //MenuInflater.Inflate(Resource.Menu.menu_main, menu);
-            return true;
+            var args = new ProfileReceivedActivity.Args(e);
+            var intent = new Intent(this, typeof(ProfileReceivedActivity));
+            intent.PutExtra(Constants.Keys.ProfileReceivedArgsJson, JsonSerializer.Serialize(args));
+            RunOnUiThread(() => { StartActivity(intent); });
         }
 
-        public override bool OnOptionsItemSelected(IMenuItem item)
+        #region Navigation and Fragments
+        public override void OnBackPressed()
         {
-            return base.OnOptionsItemSelected(item);
+            // Only close the navigation drawer on BackPressed if it is open
+            if (drawerLayout.IsDrawerOpen(GravityCompat.Start)) drawerLayout.CloseDrawer(GravityCompat.Start);
+            else base.OnBackPressed();
         }
 
         public bool OnNavigationItemSelected(IMenuItem item)
@@ -155,12 +147,9 @@ namespace Arise.FileSyncer.AndroidApp.Activities
             SwitchToFragment(GetFragmentByNavId(navId));
             SupportActionBar.TitleFormatted = item.TitleFormatted;
 
-            DrawerLayout drawer = FindViewById<DrawerLayout>(Resource.Id.drawer_layout);
-            drawer.CloseDrawer(GravityCompat.Start);
+            drawerLayout.CloseDrawer(GravityCompat.Start);
             return true;
         }
-
-        #region Navigation and Fragments
 
         private void SwitchToFragment(Fragment fragment)
         {
@@ -168,67 +157,46 @@ namespace Arise.FileSyncer.AndroidApp.Activities
             fragmentTx.Replace(Resource.Id.fragment_container, fragment);
             fragmentTx.Commit();
 
-            floatingButtonHandler.Enable(navId != Resource.Id.nav_settings);
+            floatingButtonHandler.Enable(navId == Resource.Id.nav_profiles || navId == Resource.Id.nav_connections);
             floatingButtonHandler.Rotate(navId == Resource.Id.nav_connections && SyncerService.Instance.Peer.AllowPairing == true);
+        }
+
+        private static Fragment GetFragmentByNavId(int navId)
+        {
+            return navId switch
+            {
+                Resource.Id.nav_profiles => new ProfilesFragment(),
+                Resource.Id.nav_connections => new ConnectionsFragment(),
+                Resource.Id.nav_settings => new SettingsFragment(),
+                _ => new Fragment(),
+            };
         }
 
         private void SelectMenuItemByNavId(NavigationView navigationView)
         {
             bool selectedItem = false;
 
-            if (navId != 0)
+            for (int i = 0; i < navigationView.Menu.Size(); i++)
             {
-                for (int i = 0; i < navigationView.Menu.Size(); i++)
-                {
-                    IMenuItem item = navigationView.Menu.GetItem(i);
+                IMenuItem item = navigationView.Menu.GetItem(i);
 
-                    if (item.ItemId == navId)
-                    {
-                        item.SetChecked(true);
-                        selectedItem = true;
-                        SupportActionBar.TitleFormatted = item.TitleFormatted;
-                        break;
-                    }
+                if (item.ItemId == navId)
+                {
+                    item.SetChecked(true);
+                    selectedItem = true;
+                    SupportActionBar.TitleFormatted = item.TitleFormatted;
+                    break;
                 }
             }
 
             if (!selectedItem && navigationView.Menu.Size() > 0)
             {
-                IMenuItem item = navigationView.Menu.GetItem(0);
+                Android.Util.Log.Warn(Constants.TAG, $"{this}: Invalid nav menu item selected");
+                var item = navigationView.Menu.GetItem(0);
                 item.SetChecked(true);
                 navId = item.ItemId;
             }
         }
-
-        private static Fragment GetFragmentByNavId(int navId)
-        {
-            switch (navId)
-            {
-                case Resource.Id.nav_profiles: return new ProfilesFragment();
-                case Resource.Id.nav_connections: return new ConnectionsFragment();
-                case Resource.Id.nav_settings: return new SettingsFragment();
-                default: return new Fragment();
-            }
-        }
-
-        #endregion
-
-        #region Service
-
-        private void Peer_ProfileReceived(object sender, ProfileReceivedEventArgs e)
-        {
-            var args = new ProfileReceivedActivity.Args(e);
-            var intent = new Intent(this, typeof(ProfileReceivedActivity));
-            intent.PutExtra(Constants.Keys.ProfileReceivedArgsJson, JsonSerializer.Serialize(args));
-            RunOnUiThread(() => { StartActivity(intent); });
-        }
-
-        private ISyncProgress UpdateGlobalProgressBar()
-        {
-            if (SyncerService.Instance.Peer.IsSyncing() == true) return SyncerService.Instance.GlobalProgress;
-            else return null;
-        }
-
         #endregion
     }
 }

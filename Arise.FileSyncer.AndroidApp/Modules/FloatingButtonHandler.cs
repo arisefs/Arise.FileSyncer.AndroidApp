@@ -8,15 +8,13 @@ namespace Arise.FileSyncer.AndroidApp.Modules
 {
     internal class FloatingButtonHandler : IDisposable
     {
-        private static readonly string TAG = typeof(FloatingButtonHandler).Name;
-
-        private FloatingActionButton floatingActionButton;
+        private readonly FloatingActionButton floatingActionButton;
         private readonly Action<View> ownerOnClicked;
 
-        private Animation fabOpen;
-        private Animation fabClose;
-        private Animation fabRotateTo;
-        private Animation fabRotateFrom;
+        private readonly Animation fabOpen;
+        private readonly Animation fabClose;
+        private readonly Animation fabRotateTo;
+        private readonly Animation fabRotateFrom;
 
         private bool rotated = false;
         private long lastClick = 0;
@@ -84,7 +82,7 @@ namespace Arise.FileSyncer.AndroidApp.Modules
             }
         }
 
-        private long GetTime()
+        private static long GetTime()
         {
             return DateTime.Now.Ticks / TimeSpan.TicksPerMillisecond;
         }
@@ -98,8 +96,6 @@ namespace Arise.FileSyncer.AndroidApp.Modules
             {
                 if (disposing)
                 {
-                    floatingActionButton = null;
-
                     fabOpen.Dispose();
                     fabClose.Dispose();
                     fabRotateTo.Dispose();
@@ -113,6 +109,7 @@ namespace Arise.FileSyncer.AndroidApp.Modules
         public void Dispose()
         {
             Dispose(true);
+            GC.SuppressFinalize(this);
         }
         #endregion
     }
