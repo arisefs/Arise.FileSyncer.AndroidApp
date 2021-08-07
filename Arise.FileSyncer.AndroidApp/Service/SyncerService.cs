@@ -24,18 +24,17 @@ namespace Arise.FileSyncer.AndroidApp.Service
         public NetworkDiscovery Discovery { get; }
 
         public ProgressStatus GlobalProgress { get; private set; }
+        public event EventHandler<ProgressStatus> ProgressUpdate;
 
         private readonly NetworkListener listener;
         private readonly KeyConfig keyConfig;
 
         private readonly Context context;
-        private readonly SyncerNotification notification;
         private readonly ProgressTracker progressTracker;
 
         public SyncerService(Context context)
         {
             this.context = context;
-            notification = new SyncerNotification(context);
             SetupOSMethods();
 
             // Load config
@@ -151,7 +150,7 @@ namespace Arise.FileSyncer.AndroidApp.Service
             // Disable FileSetTime since its not supported
             Utility.FileSetTime = (_a, _b, _c, _d, _e) => false;
         }
-
+        
         private void ProgressTracker_ProgressUpdate(object sender, ProgressUpdateEventArgs e)
         {
             if (Peer.IsSyncing())
@@ -178,10 +177,11 @@ namespace Arise.FileSyncer.AndroidApp.Service
 
                 GlobalProgress = new ProgressStatus(Guid.Empty, indeterminate, current, maximum, speed);
 
-                notification.Show(GlobalProgress);
+                ProgressUpdate?.Invoke(this, GlobalProgress);
+                //notification.Show(GlobalProgress);
 
             }
-            else notification.Clear();
+            //else notification.Clear();
         }
 
         private void Peer_FileBuilt(object sender, FileBuiltEventArgs e)
@@ -212,7 +212,6 @@ namespace Arise.FileSyncer.AndroidApp.Service
                     listener.Dispose();
                     Discovery.Dispose();
                     Peer.Dispose();
-                    notification.Clear();
                 }
 
                 disposedValue = true;

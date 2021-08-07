@@ -78,7 +78,7 @@ namespace Arise.FileSyncer.AndroidApp.Activities
             base.OnStart();
 
             SyncerService.Instance.Peer.Profiles.ProfileReceived += OnProfileReceived;
-            SyncerJob.Schedule(this, false);
+            SyncerWorker.Schedule(this);
         }
 
         protected override void OnResume()

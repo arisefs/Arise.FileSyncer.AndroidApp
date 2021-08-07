@@ -1,4 +1,4 @@
-﻿using Android.App;
+using Android.App;
 using Android.Content;
 using Arise.FileSyncer.AndroidApp.Service;
 
@@ -10,7 +10,7 @@ namespace Arise.FileSyncer.AndroidApp.BroadcastReceivers
     {
         public override void OnReceive(Context context, Intent intent)
         {
-            SyncerJob.Schedule(context, true);
+            SyncerWorker.Schedule(context);
         }
     }
 }
