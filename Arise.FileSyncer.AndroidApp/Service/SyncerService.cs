@@ -77,12 +77,12 @@ namespace Arise.FileSyncer.AndroidApp.Service
             // Auto accept pair requests
             Peer.PairingRequest += (s, e) =>
             {
-                Log.Info("Auto accepting pair: " + e.DisplayName);
+                Log.Info($"Auto accepting pair: {e.DisplayName}");
                 e.ResultCallback(true);
             };
 
-            Log.Verbose($"{TAG}: Initialized");
-            Log.Verbose($"{TAG}: Listener IP: {listener.LocalEndpoint}");
+            Log.Verbose($"Initialized");
+            Log.Verbose($"Listener IP: {listener.LocalEndpoint}");
 
             progressTracker = new ProgressTracker(Peer, 1000, 5);
             progressTracker.ProgressUpdate += ProgressTracker_ProgressUpdate;
@@ -97,7 +97,7 @@ namespace Arise.FileSyncer.AndroidApp.Service
         {
             // Send out a single discovery signal
             Discovery.SendDiscoveryMessage();
-            Log.Debug($"{TAG}: Discovery message sent");
+            Log.Debug($"Discovery message sent");
 
             do
             {
@@ -106,7 +106,7 @@ namespace Arise.FileSyncer.AndroidApp.Service
 
             } while (Peer.IsSyncing()); // Check sync state
 
-            Log.Debug($"{TAG}: Finished");
+            Log.Debug($"Finished");
         }
 
         public void SetAllowPairing(bool newState)
