@@ -3,11 +3,16 @@ using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using Android.Content;
+using Android.Media;
 using Android.OS;
 using Arise.FileSyncer.Common;
+using Arise.FileSyncer.Common.Helpers;
 using Arise.FileSyncer.Core;
 using Arise.FileSyncer.Core.FileSync;
 using Arise.FileSyncer.Core.Peer;
+using Java.Net;
+using System.Net.Sockets;
+using System.Net;
 //using Microsoft.AppCenter.Analytics;
 
 namespace Arise.FileSyncer.AndroidApp.Service
@@ -23,7 +28,6 @@ namespace Arise.FileSyncer.AndroidApp.Service
         public SyncerPeer Peer { get; }
         public NetworkDiscovery Discovery { get; }
 
-        public ProgressStatus GlobalProgress { get; private set; }
         public event EventHandler<ProgressStatus> ProgressUpdate;
 
         private readonly NetworkListener listener;
@@ -94,18 +98,22 @@ namespace Arise.FileSyncer.AndroidApp.Service
 
         public void Run()
         {
-            // Send out a single discovery signal
-            Discovery.SendDiscoveryMessage();
-            Log.Debug($"Discovery message sent");
+            for (int i = 0; i < 5; i++)
+            {
+                // Send out discovery messages
+                Discovery.SendDiscoveryMessage();
+                Thread.Sleep(1000);
+            }
 
-            do
+            // Check sync state
+            while (Peer.IsSyncing())
             {
                 // Wait some time to allow it get into sync state
                 Thread.Sleep(5000);
+                Discovery.SendDiscoveryMessage();
+            }
 
-            } while (Peer.IsSyncing()); // Check sync state
-
-            Log.Debug($"Finished");
+            Log.Debug($"Sync finished or not started");
         }
 
         public void SetAllowPairing(bool newState)
@@ -149,8 +157,48 @@ namespace Arise.FileSyncer.AndroidApp.Service
 
             // Disable FileSetTime since its not supported
             Utility.FileSetTime = (_a, _b, _c, _d, _e) => false;
+
+            // Custom local ip resolver
+            NetworkHelper.GetLocalIPAddress = GetLocalIpAddress;
         }
-        
+
+        public static IPAddress GetLocalIpAddress(AddressFamily addressFamily)
+        {
+            var task = Task.Run(() =>
+            {
+                try
+                {
+                    var interfaces = NetworkInterface.NetworkInterfaces;
+                    while (interfaces.HasMoreElements)
+                    {
+                        NetworkInterface networkInterface = interfaces.NextElement() as NetworkInterface;
+                        var addresses = networkInterface.InetAddresses;
+                        while (addresses.HasMoreElements)
+                        {
+                            InetAddress address = addresses.NextElement() as InetAddress;
+                            if (!address.IsLoopbackAddress && address.IsSiteLocalAddress)
+                            {
+                                if (IPAddress.TryParse(address.HostAddress, out IPAddress ipAddress))
+                                {
+                                    if (ipAddress.AddressFamily == addressFamily)
+                                    {
+                                        return ipAddress;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Log.Error(ex.ToString());
+                }
+                return IPAddress.Any;
+            });
+            task.Wait();
+            return task.Result;
+        }
+
         private void ProgressTracker_ProgressUpdate(object sender, ProgressUpdateEventArgs e)
         {
             if (Peer.IsSyncing())
@@ -175,13 +223,10 @@ namespace Arise.FileSyncer.AndroidApp.Service
 
                 speed /= count;
 
-                GlobalProgress = new ProgressStatus(Guid.Empty, indeterminate, current, maximum, speed);
-
-                ProgressUpdate?.Invoke(this, GlobalProgress);
-                //notification.Show(GlobalProgress);
-
+                ProgressUpdate?.Invoke(this, new ProgressStatus(Guid.Empty, indeterminate, current, maximum, speed));
             }
-            //else notification.Clear();
+
+            SyncerNotification.Clear(context);
         }
 
         private void Peer_FileBuilt(object sender, FileBuiltEventArgs e)
@@ -189,9 +234,9 @@ namespace Arise.FileSyncer.AndroidApp.Service
             var file = Helpers.FileUtility.GetDocumentFile(e.ProfileId, e.RelativePath, false, false);
             if (file != null)
             {
-                Intent scanFileIntent = new Intent(Intent.ActionMediaScannerScanFile, file.Uri);
-                try { context.SendBroadcast(scanFileIntent); }
-                catch (Exception ex) { Log.Error($"Peer_FileBuilt: {ex.Message}"); }
+                var path = Helpers.FileUtility.GetFullPathFromTreeUri(file.Uri);
+                var mime = Helpers.FileUtility.GetMimeType(path);
+                MediaScannerConnection.ScanFile(context, new[] { path }, new[] { mime }, null);
             }
             else
             {

@@ -8,6 +8,7 @@ using AndroidX.AppCompat.App;
 using AndroidX.Core.View;
 using AndroidX.DrawerLayout.Widget;
 using AndroidX.Fragment.App;
+using AndroidX.Work;
 using Arise.FileSyncer.AndroidApp.Fragments;
 using Arise.FileSyncer.AndroidApp.Modules;
 using Arise.FileSyncer.AndroidApp.Service;
@@ -78,7 +79,7 @@ namespace Arise.FileSyncer.AndroidApp.Activities
             base.OnStart();
 
             SyncerService.Instance.Peer.Profiles.ProfileReceived += OnProfileReceived;
-            SyncerWorker.Schedule(this);
+            SyncerWorker.Schedule(this, ExistingPeriodicWorkPolicy.Keep);
         }
 
         protected override void OnResume()

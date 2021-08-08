@@ -1,6 +1,8 @@
+using System;
 using Android.App;
 using Android.Content;
 using Android.OS;
+using AndroidX.Core.App;
 using Arise.FileSyncer.Common;
 using Arise.FileSyncer.Core;
 
@@ -8,28 +10,95 @@ namespace Arise.FileSyncer.AndroidApp.Service
 {
     internal static class SyncerNotification
     {
-        public static string ProgressText(Context context, ProgressStatus progress)
-        {
-            // Speed text calc
-            (var speedNum, var speedLevel) = DividerCounter(progress.Speed, 1000);
-            string speedText = $"{speedNum:### ##0.0} {SpeedLevel(speedLevel)}/s";
+        public const string ChannelId = "sync_notify_id";
+        public const int Id = 1;
 
-            // Time text calc
-            string timeText;
+        private const int Timeout = 10000;
+        private const int ProgressMax = 100;
+        private const int ByteDivider = 1000;
+
+        public static void CreateChannel(Context context)
+        {
+            if (Build.VERSION.SdkInt >= BuildVersionCodes.O)
+            {
+                string channelName = context.Resources.GetString(Resource.String.notification_channel_name);
+                string channelDescription = context.Resources.GetString(Resource.String.notification_channel_description);
+
+                var channel = new NotificationChannel(ChannelId, channelName, NotificationImportance.Low)
+                {
+                    Description = channelDescription
+                };
+
+                var notificationManager = context.GetSystemService(Context.NotificationService) as NotificationManager;
+                notificationManager.CreateNotificationChannel(channel);
+            }
+        }
+
+        public static Notification Create(Context context, ProgressStatus progress)
+        {
+            int progressCurrent = progress.Indeterminate ? 0 : (int)(progress.GetPercent() * ProgressMax);
+
+            // Create an explicit intent for an Activity in your app
+            var intent = new Intent(context, typeof(Activities.SplashActivity));
+            intent.SetFlags(ActivityFlags.NewTask);
+
+            Notification notification = new NotificationCompat.Builder(context, ChannelId)
+                .SetSmallIcon(Resource.Drawable.baseline_sync_24)
+                .SetContentTitle(context.Resources.GetString(Resource.String.notification_title))
+                .SetContentText(ContentText(context, progress))
+                .SetCategory(NotificationCompat.CategoryProgress)
+                .SetPriority(NotificationCompat.PriorityLow)
+                .SetVisibility(NotificationCompat.VisibilityPublic)
+                .SetProgress(ProgressMax, progressCurrent, progress.Indeterminate)
+                .SetOngoing(true)
+                .SetTimeoutAfter(Timeout)
+                .SetContentIntent(PendingIntent.GetActivity(context, 0, intent, 0))
+                .Build();
+
+            return notification;
+        }
+
+        public static void Clear(Context context)
+        {
+            var notificationManager = context.GetSystemService(Context.NotificationService) as NotificationManager;
+            notificationManager.Cancel(Id);
+        }
+
+        private static string ContentText(Context context, ProgressStatus progress)
+        {
+            string speedText = SpeedText(progress.Speed);
+            string timeText = TimeText(context, progress);
+
+            try
+            {
+                string rawNotificationText = context.Resources.GetString(Resource.String.notification_text);
+                return string.Format(rawNotificationText, speedText, timeText);
+            }
+            catch (Exception ex)
+            {
+                Android.Util.Log.Error(Constants.TAG, $"SyncerNotification: ContentText format error: {ex}");
+                return "";
+            }
+        }
+
+        private static string SpeedText(double speed)
+        {
+            (var speedNum, var speedLevel) = DividerCounter(speed, ByteDivider);
+            return $"{speedNum:### ##0.0} {SpeedLevel(speedLevel)}/s";
+        }
+
+        private static string TimeText(Context context, ProgressStatus progress)
+        {
             if (progress.Speed > 0)
             {
                 string rawTimeText = context.Resources.GetString(Resource.String.notification_time);
                 (var timeNum, var timeLevel) = DividerCounter((progress.Maximum - progress.Current) / progress.Speed, 60);
-                timeText = string.Format(rawTimeText, $"{timeNum:0} {context.Resources.GetString(TimeLevel(timeLevel))}");
+                return string.Format(rawTimeText, $"{timeNum:0} {context.Resources.GetString(TimeLevel(timeLevel))}");
             }
-            else timeText = "-";
-
-            // Notification text
-            string rawNotificationText = context.Resources.GetString(Resource.String.notification_text);
-            return string.Format(rawNotificationText, speedText, timeText);
+            else return "-";
         }
 
-        public static (double, int) DividerCounter(double number, double divider)
+        private static (double, int) DividerCounter(double number, double divider)
         {
             int level = 0;
 
@@ -42,27 +111,27 @@ namespace Arise.FileSyncer.AndroidApp.Service
             return (number, level);
         }
 
-        public static string SpeedLevel(int level)
+        private static string SpeedLevel(int level)
         {
-            switch (level)
+            return level switch
             {
-                case 0: return "B";
-                case 1: return "KB";
-                case 2: return "MB";
-                case 3: return "GB";
-                case 4: return "TB";
-                default: return "PB";
-            }
+                0 => "B",
+                1 => "KB",
+                2 => "MB",
+                3 => "GB",
+                4 => "TB",
+                _ => "PB",
+            };
         }
 
-        public static int TimeLevel(int level)
+        private static int TimeLevel(int level)
         {
-            switch (level)
+            return level switch
             {
-                case 0: return Resource.String.unit_time_seconds;
-                case 1: return Resource.String.unit_time_minutes;
-                default: return Resource.String.unit_time_hours;
-            }
+                0 => Resource.String.unit_time_seconds,
+                1 => Resource.String.unit_time_minutes,
+                _ => Resource.String.unit_time_hours,
+            };
         }
     }
 }

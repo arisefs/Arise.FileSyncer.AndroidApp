@@ -58,7 +58,7 @@ namespace Arise.FileSyncer.AndroidApp.Helpers
             return document;
         }
 
-        private static string GetMimeType(string url)
+        public static string GetMimeType(string url)
         {
             string mimeType = null;
             string extension = MimeTypeMap.GetFileExtensionFromUrl(url);

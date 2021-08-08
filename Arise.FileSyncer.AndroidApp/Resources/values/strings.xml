@@ -23,6 +23,8 @@
   <string name="notification_title">Syncing files...</string>
   <string name="notification_text">{0} | {1}</string>
   <string name="notification_time">{0} remaining</string>
+  <string name="notification_channel_name">Sync Progress</string>
+  <string name="notification_channel_description">Progress of the file sync</string>
   
   <string name="unit_time_seconds">seconds</string>
   <string name="unit_time_minutes">minutes</string>
