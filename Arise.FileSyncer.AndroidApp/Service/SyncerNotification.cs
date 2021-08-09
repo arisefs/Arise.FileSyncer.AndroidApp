@@ -58,9 +58,15 @@ namespace Arise.FileSyncer.AndroidApp.Service
             return notification;
         }
 
+        public static void Notify(Context context, Notification notification)
+        {
+            var notificationManager = NotificationManagerCompat.From(context);
+            notificationManager.Notify(Id, notification);
+        }
+
         public static void Clear(Context context)
         {
-            var notificationManager = context.GetSystemService(Context.NotificationService) as NotificationManager;
+            var notificationManager = NotificationManagerCompat.From(context);
             notificationManager.Cancel(Id);
         }
 

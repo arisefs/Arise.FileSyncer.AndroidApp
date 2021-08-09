@@ -28,7 +28,7 @@ namespace Arise.FileSyncer.AndroidApp.Fragments
                 Name = profile.Name;
                 SyncTypeRes = GetTypeResId(profile.AllowSend, profile.AllowReceive);
                 LastSyncDate = profile.LastSyncDate;
-                RootDirectory = profile.RootDirectory;
+                RootDirectory = UriHelper.GetUriName(Application.Context, profile.RootDirectory);
                 allowReceive = profile.AllowReceive;
             }
 
@@ -37,7 +37,7 @@ namespace Arise.FileSyncer.AndroidApp.Fragments
                 Name = profile.Name;
                 SyncTypeRes = GetTypeResId(profile.AllowSend, profile.AllowReceive);
                 LastSyncDate = profile.LastSyncDate;
-                RootDirectory = profile.RootDirectory;
+                RootDirectory = UriHelper.GetUriName(Application.Context, profile.RootDirectory);
             }
 
             private static bool CheckForErrors(Guid id, bool allowReceive)

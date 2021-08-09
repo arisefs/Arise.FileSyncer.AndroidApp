@@ -22,6 +22,8 @@ namespace Arise.FileSyncer.AndroidApp.Service
             Android.Util.Log.Debug(Constants.TAG, "SyncerWorker -> DoWork");
             SyncerService.Instance.ProgressUpdate += OnProgressUpdate;
             SyncerService.Instance.Run();
+            SyncerService.Instance.ProgressUpdate -= OnProgressUpdate;
+            SyncerNotification.Clear(ApplicationContext);
             return Result.InvokeSuccess();
         }
 

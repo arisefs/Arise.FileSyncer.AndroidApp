@@ -10,7 +10,9 @@ using Arise.FileSyncer.AndroidApp.Service;
 using Arise.FileSyncer.Core;
 using Google.Android.Material.Snackbar;
 using Google.Android.Material.AppBar;
+using AndroidX.DocumentFile.Provider;
 using AlertDialog = AndroidX.AppCompat.App.AlertDialog;
+using Uri = Android.Net.Uri;
 
 namespace Arise.FileSyncer.AndroidApp.Activities
 {
@@ -192,7 +194,7 @@ namespace Arise.FileSyncer.AndroidApp.Activities
             layout.AddView(CreateSpace(16));
             AddDetailsItem(layout, Resource.String.details_profile_name, profile.Name);
             layout.AddView(CreateSpace(4));
-            AddDetailsItem(layout, Resource.String.details_profile_directory, profile.RootDirectory);
+            AddDetailsItem(layout, Resource.String.details_profile_directory, UriHelper.GetUriName(this, profile.RootDirectory));
             layout.AddView(CreateSpace(4));
             AddDetailsItem(layout, Resource.String.details_profile_synctype, GetSyncType(profile));
             layout.AddView(CreateSpace(16));

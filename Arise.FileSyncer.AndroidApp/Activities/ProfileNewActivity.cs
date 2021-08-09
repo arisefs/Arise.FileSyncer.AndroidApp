@@ -13,13 +13,11 @@ namespace Arise.FileSyncer.AndroidApp.Activities
     {
         protected override void OnEditDone()
         {
-            string correctPath = PathHelper.GetCorrect(editDirectory.Text, true);
-
             var profile = new SyncProfile()
             {
                 Key = Guid.NewGuid(),
                 Name = editName.Text,
-                RootDirectory = correctPath,
+                RootDirectory = selectedUri.ToString(),
                 AllowSend = cbAllowSend.Checked,
                 AllowReceive = cbAllowReceive.Checked,
                 AllowDelete = cbAllowReceive.Checked && cbAllowDelete.Checked,

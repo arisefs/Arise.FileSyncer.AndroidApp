@@ -1,7 +1,12 @@
 using System;
+using System.Collections.Generic;
 using System.IO;
+using Android.App;
+using AndroidX.DocumentFile.Provider;
 using Arise.FileSyncer.AndroidApp.Helpers;
 using Arise.FileSyncer.Core;
+using Arise.FileSyncer.Core.FileSync;
+using Uri = Android.Net.Uri;
 
 namespace Arise.FileSyncer.AndroidApp.Service
 {
@@ -160,6 +165,62 @@ namespace Arise.FileSyncer.AndroidApp.Service
                 Log.Warning(LogName + ": exception when deleting directory. MSG: " + ex.Message);
                 return false;
             }
+        }
+
+        public static FileSystemItem[] GenerateTreeAndroid(string rootUri, bool skipHidden)
+        {
+            DocumentFile rootTree;
+            try
+            {
+                rootTree = DocumentFile.FromTreeUri(Application.Context, Uri.Parse(rootUri));
+            }
+            catch (Exception ex)
+            {
+                Log.Warning($"{nameof(GenerateTreeAndroid)}: Failed to get root document tree: {ex}");
+                return null;
+            }
+
+            List<FileSystemItem> fsItems = new();
+
+            try
+            {
+                GetDocumentInfoRecursive(rootTree, "", skipHidden, ref fsItems);
+            }
+            catch (Exception ex)
+            {
+                Log.Warning($"{nameof(GenerateTreeAndroid)}: Failed to list filesystem items: {ex}");
+                return null;
+            }
+
+            return fsItems.ToArray();
+        }
+
+        private static void GetDocumentInfoRecursive(DocumentFile root, string relativePath, bool skipHidden, ref List<FileSystemItem> fsItems)
+        {
+            foreach (DocumentFile document in root.ListFiles())
+            {
+                if (skipHidden && document.Name.StartsWith('.')) continue;
+
+                string docRelativePath = Path.Combine(relativePath, document.Name);
+                DateTime docLastModified = TimeStampToDateTime(document.LastModified());
+
+                if (document.IsDirectory)
+                {
+                    fsItems.Add(new FileSystemItem(true, docRelativePath, 0, docLastModified));
+                    GetDocumentInfoRecursive(document, docRelativePath, skipHidden, ref fsItems);
+                }
+                else if (document.IsFile)
+                {
+                    fsItems.Add(new FileSystemItem(false, docRelativePath, document.Length(), docLastModified));
+                }
+            }
+        }
+
+        private static DateTime TimeStampToDateTime(long timeStamp)
+        {
+            var dateTime = new DateTime(1970, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc);
+            dateTime = dateTime.AddMilliseconds(timeStamp);
+            return dateTime.ToLocalTime();
         }
     }
 }

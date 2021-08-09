@@ -1,5 +1,6 @@
 using System;
 using Android.Content;
+using AndroidX.DocumentFile.Provider;
 using Uri = Android.Net.Uri;
 
 namespace Arise.FileSyncer.AndroidApp.Helpers
@@ -35,7 +36,7 @@ namespace Arise.FileSyncer.AndroidApp.Helpers
             if (uri != null)
             {
                 try { context.ContentResolver.ReleasePersistableUriPermission(uri, flags); }
-                catch (Exception ex) { Android.Util.Log.Error(Constants.TAG, "RemoveUriWithPermissions: " + ex.Message); }
+                catch (Exception ex) { Android.Util.Log.Warn(Constants.TAG, "RemoveUriWithPermissions: " + ex.Message); }
 
                 AppPrefs.RemoveKey(context, key.ToString());
             }
@@ -66,6 +67,20 @@ namespace Arise.FileSyncer.AndroidApp.Helpers
             }
 
             return false;
+        }
+
+        public static string GetUriName(Context context, string uriString)
+        {
+            try
+            {
+                Uri rootUri = Uri.Parse(uriString);
+                var rootTree = DocumentFile.FromTreeUri(context, rootUri);
+                return rootTree.Name;
+            }
+            catch (Exception)
+            {
+                return "Failed to resolve URI";
+            }
         }
     }
 }

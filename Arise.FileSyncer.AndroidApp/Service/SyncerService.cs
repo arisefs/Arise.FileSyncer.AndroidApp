@@ -40,6 +40,7 @@ namespace Arise.FileSyncer.AndroidApp.Service
         {
             this.context = context;
             SetupOSMethods();
+            SyncerNotification.CreateChannel(context);
 
             // Load config
             Config = new SyncerConfig();
@@ -154,6 +155,7 @@ namespace Arise.FileSyncer.AndroidApp.Service
             Utility.FileCreateReadStream = SyncerUtility.FileCreateReadStream;
             Utility.DirectoryCreate = SyncerUtility.DirectoryCreate;
             Utility.DirectoryDelete = SyncerUtility.DirectoryDelete;
+            DirectoryTreeQuery.GenerateTree = SyncerUtility.GenerateTreeAndroid;
 
             // Disable FileSetTime since its not supported
             Utility.FileSetTime = (_a, _b, _c, _d, _e) => false;
@@ -223,10 +225,11 @@ namespace Arise.FileSyncer.AndroidApp.Service
 
                 speed /= count;
 
-                ProgressUpdate?.Invoke(this, new ProgressStatus(Guid.Empty, indeterminate, current, maximum, speed));
+                var overallProgress = new ProgressStatus(Guid.Empty, indeterminate, current, maximum, speed);
+                SyncerNotification.Notify(context, SyncerNotification.Create(context, overallProgress));
+                ProgressUpdate?.Invoke(this, overallProgress);
             }
-
-            SyncerNotification.Clear(context);
+            else SyncerNotification.Clear(context);
         }
 
         private void Peer_FileBuilt(object sender, FileBuiltEventArgs e)

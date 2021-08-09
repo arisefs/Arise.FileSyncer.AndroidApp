@@ -44,13 +44,17 @@ namespace Arise.FileSyncer.AndroidApp.Activities
                 return;
             }
 
-            string correctPath = PathHelper.GetCorrect(editDirectory.Text, true);
+            if (selectedUri == null)
+            {
+                OnError(Resource.String.error_profile_details_root_uri);
+                return;
+            }
 
             var profile = new SyncProfile()
             {
                 Key = args.Key,
                 Name = editName.Text,
-                RootDirectory = correctPath,
+                RootDirectory = selectedUri.ToString(),
                 CreationDate = args.CreationDate,
                 LastSyncDate = DateTime.Now,
                 Activated = true,

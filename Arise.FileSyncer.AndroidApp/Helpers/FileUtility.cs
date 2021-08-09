@@ -5,9 +5,9 @@ using Android.OS.Storage;
 using Android.Provider;
 using Android.Webkit;
 using AndroidX.DocumentFile.Provider;
-using Java.IO;
 using Array = Java.Lang.Reflect.Array;
 using Uri = Android.Net.Uri;
+using File = Java.IO.File;
 
 namespace Arise.FileSyncer.AndroidApp.Helpers
 {

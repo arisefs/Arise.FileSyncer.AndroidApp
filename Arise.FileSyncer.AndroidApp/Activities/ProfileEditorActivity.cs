@@ -12,6 +12,8 @@ using Google.Android.Material.Snackbar;
 using Google.Android.Material.TextField;
 using Google.Android.Material.AppBar;
 using Uri = Android.Net.Uri;
+using AndroidX.DocumentFile.Provider;
+using System;
 
 namespace Arise.FileSyncer.AndroidApp.Activities
 {
@@ -68,10 +70,10 @@ namespace Arise.FileSyncer.AndroidApp.Activities
             editDirectory = FindViewById<TextInputEditText>(Resource.Id.edit_directory);
             editDirectory.KeyListener = null;
             editDirectory.AfterTextChanged += EditDirectory_AfterTextChanged;
-            editDirectory.Click += (sender, e) => { SelectDirectry(); };
+            editDirectory.Click += (sender, e) => { SelectDirectory(); };
             editDirectory.FocusChange += (sender, e) =>
             {
-                if (e.HasFocus && !dirClicked) SelectDirectry();
+                if (e.HasFocus && !dirClicked) SelectDirectory();
                 dirClicked = e.HasFocus;
             };
             
@@ -118,24 +120,14 @@ namespace Arise.FileSyncer.AndroidApp.Activities
             }
         }
 
-        protected override void OnActivityResult(int requestCode, Result resultCode, Intent data)
+        protected override void OnActivityResult(int requestCode, Result resultCode, Intent resultData)
         {
-            if (requestCode == DirectorySelectRC)
+            if (requestCode == DirectorySelectRC && resultCode == Result.Ok && resultData != null)
             {
-                if (resultCode == Result.Ok)
-                {
-                    selectedUri = data.Data;
-                    string dirPath = FileUtility.GetFullPathFromTreeUri(data.Data);
-
-                    if (!string.IsNullOrWhiteSpace(dirPath) && !dirPath.EndsWith(Path.DirectorySeparatorChar))
-                    {
-                        dirPath += Path.DirectorySeparatorChar;
-                    }
-
-                    editDirectory.Text = dirPath;
-                }
+                OnSelectedDirectory(resultData.Data);
             }
-            else base.OnActivityResult(requestCode, resultCode, data);
+
+            base.OnActivityResult(requestCode, resultCode, resultData);
         }
 
         protected virtual void OnError(int resId)
@@ -170,7 +162,7 @@ namespace Arise.FileSyncer.AndroidApp.Activities
             cbAllowReceive.Error = null;
         }
 
-        private void SelectDirectry()
+        private void SelectDirectory()
         {
             dirClicked = true;
 
@@ -180,13 +172,27 @@ namespace Arise.FileSyncer.AndroidApp.Activities
                 ActivityFlags.GrantWriteUriPermission |
                 ActivityFlags.GrantPersistableUriPermission |
                 ActivityFlags.GrantPrefixUriPermission);
-
+            
             if (selectedUri != null)
             {
                 directorySelectIntent.PutExtra(DocumentsContract.ExtraInitialUri, selectedUri);
             }
 
             StartActivityForResult(directorySelectIntent, DirectorySelectRC);
+        }
+
+        private void OnSelectedDirectory(Uri selected)
+        {
+            try
+            {
+                var tree = DocumentFile.FromTreeUri(this, selected);
+                editDirectory.Text = tree.Name;
+                selectedUri = selected;
+            }
+            catch (Exception ex)
+            {
+                Android.Util.Log.Error(Constants.TAG, $"{this}: Selected uri invalid: {ex}");
+            }
         }
 
         private bool CheckValues()
@@ -208,12 +214,16 @@ namespace Arise.FileSyncer.AndroidApp.Activities
                 editDirectoryLayout.ErrorFormatted = new Java.Lang.String(error);
                 success = false;
             }
-            else if (!Directory.Exists(editDirectory.Text))
+            else
             {
-                string error = Resources.GetString(Resource.String.error_pnew_directory_not_exist);
-                editDirectoryLayout.ErrorEnabled = true;
-                editDirectoryLayout.ErrorFormatted = new Java.Lang.String(error);
-                success = false;
+                var tree = DocumentFile.FromTreeUri(this, selectedUri);
+                if (!tree.IsDirectory || !tree.Exists())
+                {
+                    string error = Resources.GetString(Resource.String.error_pnew_directory_not_exist);
+                    editDirectoryLayout.ErrorEnabled = true;
+                    editDirectoryLayout.ErrorFormatted = new Java.Lang.String(error);
+                    success = false;
+                }
             }
 
             if (!(cbAllowSend.Checked || cbAllowReceive.Checked))

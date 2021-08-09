@@ -3,10 +3,12 @@ using Android.App;
 using Android.Content;
 using Android.OS;
 using Android.Widget;
+using AndroidX.DocumentFile.Provider;
 using Arise.FileSyncer.AndroidApp.Helpers;
 using Arise.FileSyncer.AndroidApp.Service;
 using Arise.FileSyncer.Core;
 using Arise.FileSyncer.Core.Helpers;
+using Uri = Android.Net.Uri;
 
 namespace Arise.FileSyncer.AndroidApp.Activities
 {
@@ -23,14 +25,28 @@ namespace Arise.FileSyncer.AndroidApp.Activities
             if (Guid.TryParse(Intent.GetStringExtra(Constants.Keys.ProfileId), out var profileId))
             {
                 this.profileId = profileId;
+                
 
                 if (SyncerService.Instance.Peer.Profiles.GetProfile(profileId, out var profile))
                 {
                     editName.Text = profile.Name;
                     editName.SetSelection(editName.Text.Length);
 
-                    editDirectory.Text = profile.RootDirectory;
-                    editDirectory.SetSelection(editDirectory.Text.Length);
+                    selectedUri = Uri.Parse(profile.RootDirectory);
+                    if (selectedUri != null)
+                    {
+                        try
+                        {
+                            var rootTree = DocumentFile.FromTreeUri(this, selectedUri);
+                            editDirectory.Text = rootTree.Name;
+                            editDirectory.SetSelection(editDirectory.Text.Length);
+                        }
+                        catch (Exception)
+                        {
+                            OnError(Resource.String.error_profile_details_root_uri);
+                        }
+                    }
+                    else OnError(Resource.String.error_profile_details_root_uri);
 
                     cbAllowSend.Checked = profile.AllowSend;
                     cbAllowReceive.Checked = profile.AllowReceive;
@@ -58,10 +74,16 @@ namespace Arise.FileSyncer.AndroidApp.Activities
                 return;
             }
 
+            if (selectedUri == null)
+            {
+                OnError(Resource.String.error_profile_details_root_uri);
+                return;
+            }
+
             var profile = new SyncProfile(oldProfile)
             {
                 Name = editName.Text,
-                RootDirectory = PathHelper.GetCorrect(editDirectory.Text, true),
+                RootDirectory = selectedUri.ToString(),
                 AllowSend = cbAllowSend.Checked,
                 AllowReceive = cbAllowReceive.Checked,
                 AllowDelete = cbAllowReceive.Checked && cbAllowDelete.Checked,
@@ -69,8 +91,10 @@ namespace Arise.FileSyncer.AndroidApp.Activities
 
             if (SyncerService.Instance.Peer.Profiles.UpdateProfile(profileId, profile))
             {
-                if (selectedUri != null)
+                if (selectedUri.ToString() != AppPrefs.GetUri(this, profileId.ToString())?.ToString())
                 {
+                    Android.Util.Log.Info(Constants.TAG, "Profile root URI updated");
+
                     // Remove old URI permissions
                     UriHelper.RemoveUriWithPermissions(this, profileId);
 

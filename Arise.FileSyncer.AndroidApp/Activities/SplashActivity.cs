@@ -4,6 +4,7 @@ using Android.Content;
 using Android.Content.PM;
 using Android.OS;
 using AndroidX.AppCompat.App;
+using AndroidX.Work;
 using Arise.FileSyncer.AndroidApp.Service;
 
 namespace Arise.FileSyncer.AndroidApp.Activities
@@ -45,8 +46,10 @@ namespace Arise.FileSyncer.AndroidApp.Activities
 
         private void TryGoToMain()
         {
-            if (!CheckPermissions()) return;
+            //if (!CheckPermissions()) return;
             //if (!CheckBatteryOptimizations()) return;
+
+            SyncerWorker.Schedule(this, ExistingPeriodicWorkPolicy.Keep);
 
             GoToMain();
         }
