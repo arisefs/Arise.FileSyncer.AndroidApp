@@ -39,8 +39,10 @@ namespace Arise.FileSyncer.AndroidApp.Service
         public SyncerService(Context context)
         {
             this.context = context;
+
             SetupOSMethods();
             SyncerNotification.CreateChannel(context);
+            SyncerNotification.Clear(context);
 
             // Load config
             Config = new SyncerConfig();
@@ -226,7 +228,8 @@ namespace Arise.FileSyncer.AndroidApp.Service
                 speed /= count;
 
                 var overallProgress = new ProgressStatus(Guid.Empty, indeterminate, current, maximum, speed);
-                SyncerNotification.Notify(context, SyncerNotification.Create(context, overallProgress));
+                //SyncerNotification.Notify(context, SyncerNotification.Create(context, overallProgress));
+                SyncerForegroundService.Start(context);
                 ProgressUpdate?.Invoke(this, overallProgress);
             }
             else SyncerNotification.Clear(context);

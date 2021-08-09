@@ -20,10 +20,11 @@ namespace Arise.FileSyncer.AndroidApp.Service
         public override Result DoWork()
         {
             Android.Util.Log.Debug(Constants.TAG, "SyncerWorker -> DoWork");
-            SyncerService.Instance.ProgressUpdate += OnProgressUpdate;
-            SyncerService.Instance.Run();
-            SyncerService.Instance.ProgressUpdate -= OnProgressUpdate;
-            SyncerNotification.Clear(ApplicationContext);
+            SyncerForegroundService.Start(ApplicationContext);
+            //SyncerService.Instance.ProgressUpdate += OnProgressUpdate;
+            //SyncerService.Instance.Run();
+            //SyncerService.Instance.ProgressUpdate -= OnProgressUpdate;
+            //SyncerNotification.Clear(ApplicationContext);
             return Result.InvokeSuccess();
         }
 
@@ -51,7 +52,7 @@ namespace Arise.FileSyncer.AndroidApp.Service
 
             PeriodicWorkRequest workRequest = new PeriodicWorkRequest.Builder(
                 typeof(SyncerWorker),
-                TimeSpan.FromMinutes(30),
+                TimeSpan.FromMinutes(60),
                 TimeSpan.FromMinutes(20))
                 .SetConstraints(constraints)
                 .Build();
