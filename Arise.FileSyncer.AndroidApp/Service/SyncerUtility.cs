@@ -199,6 +199,7 @@ namespace Arise.FileSyncer.AndroidApp.Service
         {
             foreach (DocumentFile document in root.ListFiles())
             {
+                if (document.Name.EndsWith(".synctmp")) continue;
                 if (skipHidden && document.Name.StartsWith('.')) continue;
 
                 string docRelativePath = Path.Combine(relativePath, document.Name);
