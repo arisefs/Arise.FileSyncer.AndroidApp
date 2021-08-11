@@ -181,7 +181,7 @@ namespace Arise.FileSyncer.AndroidApp.Activities
                     layout.AddView(errorBox, 0);
                 }
 
-                CreateDetailsDisplay(layout, profileId, profile);
+                CreateDetailsDisplay(layout, profile);
             }
             else
             {
@@ -189,7 +189,7 @@ namespace Arise.FileSyncer.AndroidApp.Activities
             }
         }
 
-        private void CreateDetailsDisplay(LinearLayout layout, Guid profileId, SyncProfile profile)
+        private void CreateDetailsDisplay(LinearLayout layout, SyncProfile profile)
         {
             layout.AddView(CreateSpace(16));
             AddDetailsItem(layout, Resource.String.details_profile_name, profile.Name);
@@ -229,7 +229,7 @@ namespace Arise.FileSyncer.AndroidApp.Activities
             return Resources.GetString(GetSyncTypeRes(profile));
         }
 
-        private int GetSyncTypeRes(SyncProfile profile)
+        private static int GetSyncTypeRes(SyncProfile profile)
         {
             if (profile.AllowSend)
             {

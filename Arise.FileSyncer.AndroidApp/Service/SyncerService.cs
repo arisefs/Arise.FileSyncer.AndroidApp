@@ -1,7 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Threading;
-using System.Threading.Tasks;
 using Android.Content;
 using Android.Media;
 using Android.OS;
@@ -13,7 +9,7 @@ using Arise.FileSyncer.Core.Peer;
 using Java.Net;
 using System.Net.Sockets;
 using System.Net;
-//using Microsoft.AppCenter.Analytics;
+using Android.App;
 
 namespace Arise.FileSyncer.AndroidApp.Service
 {
@@ -21,7 +17,7 @@ namespace Arise.FileSyncer.AndroidApp.Service
     {
         private const string TAG = "SyncerService";
 
-        private static readonly Lazy<SyncerService> instance = new(() => new SyncerService(MainApplication.AppContext), true);
+        private static readonly Lazy<SyncerService> instance = new(() => new SyncerService(Application.Context), true);
         public static SyncerService Instance => instance.Value;
 
         public SyncerConfig Config { get; }
@@ -157,10 +153,10 @@ namespace Arise.FileSyncer.AndroidApp.Service
             Utility.FileCreateReadStream = SyncerUtility.FileCreateReadStream;
             Utility.DirectoryCreate = SyncerUtility.DirectoryCreate;
             Utility.DirectoryDelete = SyncerUtility.DirectoryDelete;
-            DirectoryTreeQuery.GenerateTree = SyncerUtility.GenerateTreeAndroid;
+            Utility.GenerateTree = SyncerUtility.GenerateTreeAndroid;
 
             // Disable FileSetTime since its not supported
-            Utility.FileSetTime = (_a, _b, _c, _d, _e) => false;
+            Utility.FileSetTime = (_, _, _, _) => false;
 
             // Custom local ip resolver
             NetworkHelper.GetLocalIPAddress = GetLocalIpAddress;
@@ -228,7 +224,6 @@ namespace Arise.FileSyncer.AndroidApp.Service
                 speed /= count;
 
                 var overallProgress = new ProgressStatus(Guid.Empty, indeterminate, current, maximum, speed);
-                //SyncerNotification.Notify(context, SyncerNotification.Create(context, overallProgress));
                 SyncerForegroundService.Start(context);
                 ProgressUpdate?.Invoke(this, overallProgress);
             }
@@ -237,7 +232,7 @@ namespace Arise.FileSyncer.AndroidApp.Service
 
         private void Peer_FileBuilt(object sender, FileBuiltEventArgs e)
         {
-            var file = Helpers.FileUtility.GetDocumentFile(e.ProfileId, e.RelativePath, false, false);
+            var file = Helpers.FileUtility.GetDocumentFile(e.RootPath, e.RelativePath, false, false);
             if (file != null)
             {
                 var path = Helpers.FileUtility.GetFullPathFromTreeUri(file.Uri);

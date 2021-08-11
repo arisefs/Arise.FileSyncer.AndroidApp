@@ -1,4 +1,3 @@
-using System;
 using Android.Content;
 using AndroidX.DocumentFile.Provider;
 using Uri = Android.Net.Uri;

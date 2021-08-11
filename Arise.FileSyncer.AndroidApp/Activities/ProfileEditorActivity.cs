@@ -1,4 +1,3 @@
-using System.IO;
 using Android.App;
 using Android.Content;
 using Android.OS;
@@ -7,13 +6,11 @@ using Android.Views;
 using Android.Widget;
 using Android.Text;
 using AndroidX.AppCompat.App;
-using Arise.FileSyncer.AndroidApp.Helpers;
+using AndroidX.DocumentFile.Provider;
 using Google.Android.Material.Snackbar;
 using Google.Android.Material.TextField;
 using Google.Android.Material.AppBar;
 using Uri = Android.Net.Uri;
-using AndroidX.DocumentFile.Provider;
-using System;
 
 namespace Arise.FileSyncer.AndroidApp.Activities
 {
@@ -41,7 +38,7 @@ namespace Arise.FileSyncer.AndroidApp.Activities
 
             // Load layout
             SetContentView(Resource.Layout.activity_profile_editor);
-            
+
             // Reset values
             dirClicked = false;
             selectedUri = null;
@@ -50,7 +47,7 @@ namespace Arise.FileSyncer.AndroidApp.Activities
             if (savedInstanceState != null)
             {
                 dirClicked = savedInstanceState.GetBoolean("dirClicked", dirClicked);
-                selectedUri = savedInstanceState.GetParcelable("selectedUri") as Android.Net.Uri;
+                selectedUri = savedInstanceState.GetParcelable("selectedUri") as Uri;
             }
 
             // Toolbar setup
@@ -59,24 +56,24 @@ namespace Arise.FileSyncer.AndroidApp.Activities
             SupportActionBar.SetDisplayHomeAsUpEnabled(true);
             SupportActionBar.SetDisplayShowTitleEnabled(true);
             SupportActionBar.SetHomeButtonEnabled(true);
-            
+
             // Name
             editNameLayout = FindViewById<TextInputLayout>(Resource.Id.edit_name_layout);
             editName = FindViewById<TextInputEditText>(Resource.Id.edit_name);
-            editName.AfterTextChanged += EditName_AfterTextChanged;
+            //editName.AfterTextChanged += EditName_AfterTextChanged;
 
             // Directory
             editDirectoryLayout = FindViewById<TextInputLayout>(Resource.Id.edit_directory_layout);
             editDirectory = FindViewById<TextInputEditText>(Resource.Id.edit_directory);
             editDirectory.KeyListener = null;
-            editDirectory.AfterTextChanged += EditDirectory_AfterTextChanged;
+            //editDirectory.AfterTextChanged += EditDirectory_AfterTextChanged;
             editDirectory.Click += (sender, e) => { SelectDirectory(); };
             editDirectory.FocusChange += (sender, e) =>
             {
                 if (e.HasFocus && !dirClicked) SelectDirectory();
                 dirClicked = e.HasFocus;
             };
-            
+
             // Checkboxes
             cbAllowSend = FindViewById<CheckBox>(Resource.Id.cb_allow_send);
             cbAllowReceive = FindViewById<CheckBox>(Resource.Id.cb_allow_receive);
@@ -172,7 +169,7 @@ namespace Arise.FileSyncer.AndroidApp.Activities
                 ActivityFlags.GrantWriteUriPermission |
                 ActivityFlags.GrantPersistableUriPermission |
                 ActivityFlags.GrantPrefixUriPermission);
-            
+
             if (selectedUri != null)
             {
                 directorySelectIntent.PutExtra(DocumentsContract.ExtraInitialUri, selectedUri);

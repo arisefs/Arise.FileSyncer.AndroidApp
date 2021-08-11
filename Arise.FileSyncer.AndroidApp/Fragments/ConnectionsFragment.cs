@@ -61,8 +61,8 @@ namespace Arise.FileSyncer.AndroidApp.Fragments
             View view = inflater.Inflate(Resource.Layout.fragment_connections, container, false);
 
             RecyclerView recyclerView = view.FindViewById<RecyclerView>(Resource.Id.connections_recycler);
-            LinearLayoutManager layoutManager = new LinearLayoutManager(recyclerView.Context);
-            DividerItemDecoration divider = new DividerItemDecoration(recyclerView.Context, layoutManager.Orientation);
+            LinearLayoutManager layoutManager = new(recyclerView.Context);
+            DividerItemDecoration divider = new(recyclerView.Context, layoutManager.Orientation);
             recyclerView.SetLayoutManager(layoutManager);
             recyclerView.AddItemDecoration(divider);
             recyclerView.SetAdapter(adapter);

@@ -1,14 +1,10 @@
-using System;
-using Android.App;
 using Android.Content;
 using AndroidX.Work;
-using Arise.FileSyncer.Common;
 
 namespace Arise.FileSyncer.AndroidApp.Service
 {
     public class SyncerWorker : Worker
     {
-        private const int ForegoundServiceTypeDataSync = 0x00000001;
         private const string UniqueId = "SyncData";
 
         public SyncerWorker(Context context, WorkerParameters parameters) : base(context, parameters)
@@ -21,24 +17,7 @@ namespace Arise.FileSyncer.AndroidApp.Service
         {
             Android.Util.Log.Debug(Constants.TAG, "SyncerWorker -> DoWork");
             SyncerForegroundService.Start(ApplicationContext);
-            //SyncerService.Instance.ProgressUpdate += OnProgressUpdate;
-            //SyncerService.Instance.Run();
-            //SyncerService.Instance.ProgressUpdate -= OnProgressUpdate;
-            //SyncerNotification.Clear(ApplicationContext);
             return Result.InvokeSuccess();
-        }
-
-        private void OnProgressUpdate(object sender, ProgressStatus progress)
-        {
-            Android.Util.Log.Debug(Constants.TAG, "SyncerWorker -> OnProgressUpdate");
-            SetForegroundAsync(CreateForegroundInfo(progress));
-        }
-
-        private ForegroundInfo CreateForegroundInfo(ProgressStatus progress)
-        {
-            Android.Util.Log.Debug(Constants.TAG, "SyncerWorker -> CreateForegroundInfo");
-            Notification notification = SyncerNotification.Create(ApplicationContext, progress);
-            return new ForegroundInfo(SyncerNotification.Id, notification, ForegoundServiceTypeDataSync);
         }
 
         public static void Schedule(Context context, ExistingPeriodicWorkPolicy policy)

@@ -1,4 +1,3 @@
-using System;
 using Android.Content;
 using Android.OS;
 using Android.OS.Storage;
@@ -8,6 +7,7 @@ using AndroidX.DocumentFile.Provider;
 using Array = Java.Lang.Reflect.Array;
 using Uri = Android.Net.Uri;
 using File = Java.IO.File;
+using Android.App;
 
 namespace Arise.FileSyncer.AndroidApp.Helpers
 {
@@ -18,15 +18,15 @@ namespace Arise.FileSyncer.AndroidApp.Helpers
     {
         private const string PRIMARY_VOLUME_NAME = "primary";
 
-        public static DocumentFile GetDocumentFile(Guid profileId, string relativePath, bool isDirectory, bool createIfNonExistent)
+        public static DocumentFile GetDocumentFile(string rootPath, string relativePath, bool isDirectory, bool createIfNonExistent)
         {
-            Uri treeUri = AppPrefs.GetUri(MainApplication.AppContext, profileId.ToString());
+            Uri treeUri = Uri.Parse(rootPath);
             if (treeUri == null) return null;
 
             // start with root of SD card and then parse through document tree.
-            DocumentFile document = DocumentFile.FromTreeUri(MainApplication.AppContext, treeUri);
+            DocumentFile document = DocumentFile.FromTreeUri(Application.Context, treeUri);
 
-            string[] parts = relativePath.Split(System.IO.Path.DirectorySeparatorChar, StringSplitOptions.RemoveEmptyEntries);
+            string[] parts = relativePath.Split(Path.DirectorySeparatorChar, StringSplitOptions.RemoveEmptyEntries);
             for (int i = 0; i < parts.Length; i++)
             {
                 DocumentFile nextDocument = document.FindFile(parts[i]);
@@ -35,21 +35,17 @@ namespace Arise.FileSyncer.AndroidApp.Helpers
                 {
                     if (createIfNonExistent)
                     {
-                        if ((i < parts.Length - 1) || isDirectory)
+                        if (isDirectory)
                         {
                             nextDocument = document.CreateDirectory(parts[i]);
                         }
-                        else
+                        else if (i == parts.Length - 1)
                         {
                             string mimeType = GetMimeType(parts[i]);
                             nextDocument = document.CreateFile(mimeType, parts[i]);
                         }
                     }
-                    else
-                    {
-                        document = null;
-                        break;
-                    }
+                    else return null;
                 }
 
                 document = nextDocument;
@@ -75,7 +71,7 @@ namespace Arise.FileSyncer.AndroidApp.Helpers
         {
             if (treeUri == null) return null;
 
-            string volumePath = GetVolumePath(GetVolumeIdFromTreeUri(treeUri), MainApplication.AppContext);
+            string volumePath = GetVolumePath(GetVolumeIdFromTreeUri(treeUri), Application.Context);
             if (volumePath == null) return File.Separator;
             if (volumePath.EndsWith(File.Separator, StringComparison.Ordinal))
             {
