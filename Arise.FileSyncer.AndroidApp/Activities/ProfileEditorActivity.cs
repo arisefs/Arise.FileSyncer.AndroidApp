@@ -11,6 +11,7 @@ using Google.Android.Material.Snackbar;
 using Google.Android.Material.TextField;
 using Google.Android.Material.AppBar;
 using Uri = Android.Net.Uri;
+using System;
 
 namespace Arise.FileSyncer.AndroidApp.Activities
 {

@@ -10,6 +10,10 @@ using Java.Net;
 using System.Net.Sockets;
 using System.Net;
 using Android.App;
+using System;
+using System.Threading.Tasks;
+using System.Threading;
+using System.Collections.Generic;
 
 namespace Arise.FileSyncer.AndroidApp.Service
 {
@@ -127,11 +131,10 @@ namespace Arise.FileSyncer.AndroidApp.Service
         {
             Log.Error = (message) =>
             {
-                var properties = new Dictionary<string, string>
-                {
-                    { "Message", message }
-                };
-
+                //var properties = new Dictionary<string, string>
+                //{
+                //    { "Message", message }
+                //};
                 //Analytics.TrackEvent("Internal Error", properties);
                 Android.Util.Log.Error(Constants.TAG, $"{TAG}: {message}");
             };

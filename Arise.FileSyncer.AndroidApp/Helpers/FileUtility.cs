@@ -8,6 +8,8 @@ using Array = Java.Lang.Reflect.Array;
 using Uri = Android.Net.Uri;
 using File = Java.IO.File;
 using Android.App;
+using System.IO;
+using System;
 
 namespace Arise.FileSyncer.AndroidApp.Helpers
 {
