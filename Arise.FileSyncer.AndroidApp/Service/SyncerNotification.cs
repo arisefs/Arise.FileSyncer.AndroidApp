@@ -19,7 +19,7 @@ namespace Arise.FileSyncer.AndroidApp.Service
 
         public static void CreateChannel(Context context)
         {
-            if (Build.VERSION.SdkInt >= BuildVersionCodes.O)
+            if (OperatingSystem.IsAndroidVersionAtLeast(26))
             {
                 string channelName = context.Resources.GetString(Resource.String.notification_channel_name);
                 string channelDescription = context.Resources.GetString(Resource.String.notification_channel_description);

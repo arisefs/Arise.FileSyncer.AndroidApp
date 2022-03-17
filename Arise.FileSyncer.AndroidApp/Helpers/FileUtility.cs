@@ -77,13 +77,13 @@ namespace Arise.FileSyncer.AndroidApp.Helpers
             if (volumePath == null) return File.Separator;
             if (volumePath.EndsWith(File.Separator, StringComparison.Ordinal))
             {
-                volumePath = volumePath.Substring(0, volumePath.Length - 1);
+                volumePath = volumePath[..^1];
             }
 
             string documentPath = GetDocumentPathFromTreeUri(treeUri);
             if (documentPath.EndsWith(File.Separator, StringComparison.Ordinal))
             {
-                documentPath = documentPath.Substring(0, documentPath.Length - 1);
+                documentPath = documentPath[..^1];
             }
 
             if (documentPath.Length > 0)

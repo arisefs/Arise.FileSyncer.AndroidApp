@@ -1,3 +1,4 @@
+using System;
 using System.Threading.Tasks;
 using Android.App;
 using Android.Content;
@@ -38,8 +39,8 @@ namespace Arise.FileSyncer.AndroidApp.Service
         private void OnProgressUpdate(object sender, ProgressStatus e)
         {
             var notification = SyncerNotification.Create(this, e);
-
-            if (Build.VERSION.SdkInt >= BuildVersionCodes.Q)
+            
+            if (OperatingSystem.IsAndroidVersionAtLeast(29))
                 StartForeground(SyncerNotification.Id, notification, ForegroundService.TypeDataSync);
             else StartForeground(SyncerNotification.Id, notification);
         }
@@ -62,7 +63,7 @@ namespace Arise.FileSyncer.AndroidApp.Service
             {
                 var serviceIntent = new Intent(context, typeof(SyncerForegroundService));
                 serviceIntent.SetFlags(ActivityFlags.GrantReadUriPermission | ActivityFlags.GrantWriteUriPermission);
-                if (Build.VERSION.SdkInt >= BuildVersionCodes.O) context.StartForegroundService(serviceIntent);
+                if (OperatingSystem.IsAndroidVersionAtLeast(26)) context.StartForegroundService(serviceIntent);
                 else context.StartService(serviceIntent);
             }
         }
