@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using Android.App;
+using Android.Provider;
 using AndroidX.DocumentFile.Provider;
 using Arise.FileSyncer.AndroidApp.Helpers;
 using Arise.FileSyncer.Core.FileSync;
@@ -178,19 +179,22 @@ namespace Arise.FileSyncer.AndroidApp.Service
         {
             foreach (DocumentFile document in root.ListFiles())
             {
-                if (document.Name.EndsWith(".synctmp")) continue;
-                if (skipHidden && document.Name.StartsWith('.')) continue;
+                string docName = document.Name;
 
-                string docRelativePath = Path.Combine(relativePath, document.Name);
-                DateTime docLastModified = TimeStampToDateTime(document.LastModified());
+                if (docName.EndsWith(".synctmp", StringComparison.Ordinal)) continue;
+                if (skipHidden && docName.StartsWith('.')) continue;
+
+                Log.Debug($"Processing: {docName}");
+                string docRelativePath = Path.Combine(relativePath, docName);
 
                 if (document.IsDirectory)
                 {
-                    fsItems.Add(new FileSystemItem(true, docRelativePath, 0, docLastModified));
+                    fsItems.Add(new FileSystemItem(true, docRelativePath, 0, TimeStampToDateTime(0)));
                     GetDocumentInfoRecursive(document, docRelativePath, skipHidden, ref fsItems);
                 }
-                else if (document.IsFile)
+                else
                 {
+                    DateTime docLastModified = TimeStampToDateTime(document.LastModified());
                     fsItems.Add(new FileSystemItem(false, docRelativePath, document.Length(), docLastModified));
                 }
             }
