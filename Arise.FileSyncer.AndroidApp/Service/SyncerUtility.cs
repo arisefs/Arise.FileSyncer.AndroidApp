@@ -184,12 +184,11 @@ namespace Arise.FileSyncer.AndroidApp.Service
                 if (docName.EndsWith(".synctmp", StringComparison.Ordinal)) continue;
                 if (skipHidden && docName.StartsWith('.')) continue;
 
-                Log.Debug($"Processing: {docName}");
                 string docRelativePath = Path.Combine(relativePath, docName);
 
                 if (document.IsDirectory)
                 {
-                    fsItems.Add(new FileSystemItem(true, docRelativePath, 0, TimeStampToDateTime(0)));
+                    fsItems.Add(new FileSystemItem(true, docRelativePath, 0, new DateTime()));
                     GetDocumentInfoRecursive(document, docRelativePath, skipHidden, ref fsItems);
                 }
                 else
