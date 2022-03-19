@@ -23,6 +23,8 @@
   <string name="notification_title">Syncing files...</string>
   <string name="notification_text">{0} | {1}</string>
   <string name="notification_time">{0} remaining</string>
+  <string name="notification_channel_name">Sync Progress</string>
+  <string name="notification_channel_description">Progress of the file sync</string>
   
   <string name="unit_time_seconds">seconds</string>
   <string name="unit_time_minutes">minutes</string>
@@ -83,4 +85,7 @@
   <string name="error_prec_arg_parse">Data retrive error</string>
   <string name="error_profile_id_retrive">Failed to retrive profile ID</string>
   <string name="error_profile_details_retrive">Failed to retrive profile details</string>
+  <string name="error_profile_details_root_uri">Failed to resolve root directory</string>
+
+  <string name="description_header_icon">Application Icon</string>
 </resources>

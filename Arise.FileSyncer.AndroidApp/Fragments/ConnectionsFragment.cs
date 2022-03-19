@@ -1,8 +1,8 @@
 using System;
 using Android.OS;
-using Android.Support.V4.App;
-using Android.Support.V7.Widget;
 using Android.Views;
+using AndroidX.Fragment.App;
+using AndroidX.RecyclerView.Widget;
 using Arise.FileSyncer.AndroidApp.Service;
 using Arise.FileSyncer.Core;
 
@@ -19,12 +19,12 @@ namespace Arise.FileSyncer.AndroidApp.Fragments
             adapter = new ConnectionsAdapter();
 
             var service = SyncerService.Instance;
-            service.Peer.ConnectionVerified += Peer_ConnectionVerified;
-            service.Peer.ConnectionRemoved += Peer_ConnectionRemoved;
+            service.Peer.Connections.ConnectionVerified += Peer_ConnectionVerified;
+            service.Peer.Connections.ConnectionRemoved += Peer_ConnectionRemoved;
 
-            foreach (var id in service.Peer.GetConnectionIds())
+            foreach (var id in service.Peer.Connections.GetConnectionIds())
             {
-                if (service.Peer.TryGetConnection(id, out var connection))
+                if (service.Peer.Connections.TryGetConnection(id, out var connection))
                 {
                     adapter.Connections.Add(new ConnectionContainer(id, connection));
                 }
@@ -43,8 +43,8 @@ namespace Arise.FileSyncer.AndroidApp.Fragments
 
             try
             {
-                service.Peer.ConnectionVerified -= Peer_ConnectionVerified;
-                service.Peer.ConnectionRemoved -= Peer_ConnectionRemoved;
+                service.Peer.Connections.ConnectionVerified -= Peer_ConnectionVerified;
+                service.Peer.Connections.ConnectionRemoved -= Peer_ConnectionRemoved;
             }
             catch (Exception ex)
             {
@@ -61,8 +61,8 @@ namespace Arise.FileSyncer.AndroidApp.Fragments
             View view = inflater.Inflate(Resource.Layout.fragment_connections, container, false);
 
             RecyclerView recyclerView = view.FindViewById<RecyclerView>(Resource.Id.connections_recycler);
-            LinearLayoutManager layoutManager = new LinearLayoutManager(recyclerView.Context);
-            DividerItemDecoration divider = new DividerItemDecoration(recyclerView.Context, layoutManager.Orientation);
+            LinearLayoutManager layoutManager = new(recyclerView.Context);
+            DividerItemDecoration divider = new(recyclerView.Context, layoutManager.Orientation);
             recyclerView.SetLayoutManager(layoutManager);
             recyclerView.AddItemDecoration(divider);
             recyclerView.SetAdapter(adapter);
@@ -74,7 +74,7 @@ namespace Arise.FileSyncer.AndroidApp.Fragments
         {
             if (adapter != null)
             {
-                if (SyncerService.Instance.Peer.TryGetConnection(e.Id, out var connection))
+                if (SyncerService.Instance.Peer.Connections.TryGetConnection(e.Id, out var connection))
                 {
                     Activity.RunOnUiThread(() =>
                     {
@@ -85,7 +85,7 @@ namespace Arise.FileSyncer.AndroidApp.Fragments
             }
         }
 
-        private void Peer_ConnectionRemoved(object sender, ConnectionRemovedEventArgs e)
+        private void Peer_ConnectionRemoved(object sender, ConnectionEventArgs e)
         {
             if (adapter != null)
             {

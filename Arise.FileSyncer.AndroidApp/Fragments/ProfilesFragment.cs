@@ -1,9 +1,9 @@
 using System;
 using Android.Content;
 using Android.OS;
-using Android.Support.V4.App;
-using Android.Support.V7.Widget;
 using Android.Views;
+using AndroidX.Fragment.App;
+using AndroidX.RecyclerView.Widget;
 using Arise.FileSyncer.AndroidApp.Activities;
 using Arise.FileSyncer.AndroidApp.Service;
 using Arise.FileSyncer.Core;
@@ -24,12 +24,12 @@ namespace Arise.FileSyncer.AndroidApp.Fragments
             // Retreive profiles and setup events
             var service = SyncerService.Instance;
             // Subscribe to service events
-            service.Peer.ProfileAdded += Peer_ProfileAdded;
-            service.Peer.ProfileRemoved += Peer_ProfileRemoved;
-            service.Peer.ProfileChanged += Peer_ProfileChanged;
+            service.Peer.Profiles.ProfileAdded += Peer_ProfileAdded;
+            service.Peer.Profiles.ProfileRemoved += Peer_ProfileRemoved;
+            service.Peer.Profiles.ProfileChanged += Peer_ProfileChanged;
 
             // Fill profile adapter's list
-            foreach (var profileKV in service.Config.PeerSettings.Profiles)
+            foreach (var profileKV in service.Peer.Profiles.Snapshot())
             {
                 adapter.Profiles.Add(new SyncProfileContainer(profileKV.Key, profileKV.Value));
             }
@@ -44,9 +44,9 @@ namespace Arise.FileSyncer.AndroidApp.Fragments
 
             try
             {
-                service.Peer.ProfileAdded -= Peer_ProfileAdded;
-                service.Peer.ProfileRemoved -= Peer_ProfileRemoved;
-                service.Peer.ProfileChanged -= Peer_ProfileChanged;
+                service.Peer.Profiles.ProfileAdded -= Peer_ProfileAdded;
+                service.Peer.Profiles.ProfileRemoved -= Peer_ProfileRemoved;
+                service.Peer.Profiles.ProfileChanged -= Peer_ProfileChanged;
             }
             catch (Exception ex)
             {
@@ -65,8 +65,8 @@ namespace Arise.FileSyncer.AndroidApp.Fragments
             View view = inflater.Inflate(Resource.Layout.fragment_profiles, container, false);
 
             RecyclerView recyclerView = view.FindViewById<RecyclerView>(Resource.Id.profiles_recycler);
-            LinearLayoutManager layoutManager = new LinearLayoutManager(recyclerView.Context);
-            DividerItemDecoration divider = new DividerItemDecoration(recyclerView.Context, layoutManager.Orientation);
+            LinearLayoutManager layoutManager = new(recyclerView.Context);
+            DividerItemDecoration divider = new(recyclerView.Context, layoutManager.Orientation);
             recyclerView.SetLayoutManager(layoutManager);
             recyclerView.AddItemDecoration(divider);
             recyclerView.SetAdapter(adapter);

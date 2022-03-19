@@ -1,23 +1,22 @@
 using System;
-using System.IO;
 using Android.App;
 using Android.Content;
 using Android.OS;
-using Android.Provider;
-using Android.Support.Design.Widget;
-using Android.Support.V7.App;
 using Android.Views;
 using Android.Widget;
+using AndroidX.AppCompat.App;
 using Arise.FileSyncer.AndroidApp.Helpers;
 using Arise.FileSyncer.AndroidApp.Service;
 using Arise.FileSyncer.Core;
-using AlertDialog = Android.Support.V7.App.AlertDialog;
-using Toolbar = Android.Support.V7.Widget.Toolbar;
+using Google.Android.Material.Snackbar;
+using Google.Android.Material.AppBar;
+using AndroidX.DocumentFile.Provider;
+using AlertDialog = AndroidX.AppCompat.App.AlertDialog;
 using Uri = Android.Net.Uri;
 
 namespace Arise.FileSyncer.AndroidApp.Activities
 {
-    [Activity(Label = "@string/act_profile_details", Theme = "@style/AppTheme.NoActionBar")]
+    [Activity(Label = "@string/act_profile_details", Theme = "@style/Theme.MyApplication.NoActionBar")]
     public class ProfileDetailsActivity : AppCompatActivity
     {
         private const int DirectorySelectRC = 1;
@@ -32,7 +31,7 @@ namespace Arise.FileSyncer.AndroidApp.Activities
             SetContentView(Resource.Layout.activity_profile_details);
 
             // Toolbar setup
-            var toolbar = FindViewById<Toolbar>(Resource.Id.toolbar);
+            var toolbar = FindViewById<MaterialToolbar>(Resource.Id.toolbar);
             SetSupportActionBar(toolbar);
             SupportActionBar.SetDisplayHomeAsUpEnabled(true);
             SupportActionBar.SetDisplayShowTitleEnabled(true);
@@ -62,7 +61,7 @@ namespace Arise.FileSyncer.AndroidApp.Activities
             {
                 if (resultCode == Result.Ok)
                 {
-                    if (SyncerService.Instance.Peer.Settings.Profiles.TryGetValue(profileId, out var profile))
+                    if (SyncerService.Instance.Peer.Profiles.GetProfile(profileId, out var profile))
                     {
                         if (data.Data != null)
                         {
@@ -141,7 +140,7 @@ namespace Arise.FileSyncer.AndroidApp.Activities
 
         private void DeleteProfile()
         {
-            if (SyncerService.Instance.Peer.RemoveProfile(profileId))
+            if (SyncerService.Instance.Peer.Profiles.RemoveProfile(profileId))
             {
                 UriHelper.RemoveUriWithPermissions(this, profileId);
                 Finish();
@@ -151,7 +150,7 @@ namespace Arise.FileSyncer.AndroidApp.Activities
         private void UpdateViews()
         {
             // Fill out the profile details
-            if (SyncerService.Instance.Peer.Settings.Profiles.TryGetValue(profileId, out var profile))
+            if (SyncerService.Instance.Peer.Profiles.GetProfile(profileId, out var profile))
             {
                 var layout = FindViewById<LinearLayout>(Resource.Id.view_root);
                 layout.RemoveAllViews();
@@ -182,7 +181,7 @@ namespace Arise.FileSyncer.AndroidApp.Activities
                     layout.AddView(errorBox, 0);
                 }
 
-                CreateDetailsDisplay(layout, profileId, profile);
+                CreateDetailsDisplay(layout, profile);
             }
             else
             {
@@ -190,12 +189,12 @@ namespace Arise.FileSyncer.AndroidApp.Activities
             }
         }
 
-        private void CreateDetailsDisplay(LinearLayout layout, Guid profileId, SyncProfile profile)
+        private void CreateDetailsDisplay(LinearLayout layout, SyncProfile profile)
         {
             layout.AddView(CreateSpace(16));
             AddDetailsItem(layout, Resource.String.details_profile_name, profile.Name);
             layout.AddView(CreateSpace(4));
-            AddDetailsItem(layout, Resource.String.details_profile_directory, profile.RootDirectory);
+            AddDetailsItem(layout, Resource.String.details_profile_directory, UriHelper.GetUriName(this, profile.RootDirectory));
             layout.AddView(CreateSpace(4));
             AddDetailsItem(layout, Resource.String.details_profile_synctype, GetSyncType(profile));
             layout.AddView(CreateSpace(16));
@@ -230,7 +229,7 @@ namespace Arise.FileSyncer.AndroidApp.Activities
             return Resources.GetString(GetSyncTypeRes(profile));
         }
 
-        private int GetSyncTypeRes(SyncProfile profile)
+        private static int GetSyncTypeRes(SyncProfile profile)
         {
             if (profile.AllowSend)
             {

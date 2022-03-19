@@ -8,18 +8,16 @@ using Arise.FileSyncer.Core.Helpers;
 
 namespace Arise.FileSyncer.AndroidApp.Activities
 {
-    [Activity(Label = "@string/act_profile_new", Theme = "@style/AppTheme.NoActionBar")]
+    [Activity(Label = "@string/act_profile_new", Theme = "@style/Theme.MyApplication.NoActionBar")]
     public class ProfileNewActivity : ProfileEditorActivity
     {
         protected override void OnEditDone()
         {
-            string correctPath = PathHelper.GetCorrect(editDirectory.Text, true);
-
-            SyncProfile profile = new SyncProfile.Creator()
+            var profile = new SyncProfile()
             {
                 Key = Guid.NewGuid(),
                 Name = editName.Text,
-                RootDirectory = correctPath,
+                RootDirectory = selectedUri.ToString(),
                 AllowSend = cbAllowSend.Checked,
                 AllowReceive = cbAllowReceive.Checked,
                 AllowDelete = cbAllowReceive.Checked && cbAllowDelete.Checked,
@@ -28,7 +26,7 @@ namespace Arise.FileSyncer.AndroidApp.Activities
 
             Guid profileId = Guid.NewGuid();
 
-            if (SyncerService.Instance.Peer.AddProfile(profileId, profile))
+            if (SyncerService.Instance.Peer.Profiles.AddProfile(profileId, profile))
             {
                 // Save URI and permissions
                 UriHelper.SaveUriWithPermissions(this, selectedUri, profileId, cbAllowReceive.Checked);

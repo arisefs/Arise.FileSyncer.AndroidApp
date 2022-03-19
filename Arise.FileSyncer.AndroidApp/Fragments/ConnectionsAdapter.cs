@@ -1,8 +1,8 @@
 using System;
 using System.Collections.Generic;
-using Android.Support.V7.Widget;
 using Android.Views;
 using Android.Widget;
+using AndroidX.RecyclerView.Widget;
 using Arise.FileSyncer.Core;
 
 namespace Arise.FileSyncer.AndroidApp.Fragments

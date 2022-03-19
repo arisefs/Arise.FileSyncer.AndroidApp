@@ -3,14 +3,16 @@ using Android.App;
 using Android.Content;
 using Android.OS;
 using Android.Widget;
+using AndroidX.DocumentFile.Provider;
 using Arise.FileSyncer.AndroidApp.Helpers;
 using Arise.FileSyncer.AndroidApp.Service;
 using Arise.FileSyncer.Core;
 using Arise.FileSyncer.Core.Helpers;
+using Uri = Android.Net.Uri;
 
 namespace Arise.FileSyncer.AndroidApp.Activities
 {
-    [Activity(Label = "@string/act_profile_edit", Theme = "@style/AppTheme.NoActionBar")]
+    [Activity(Label = "@string/act_profile_edit", Theme = "@style/Theme.MyApplication.NoActionBar")]
     public class ProfileEditActivity : ProfileEditorActivity
     {
         private Guid profileId = Guid.Empty;
@@ -23,14 +25,28 @@ namespace Arise.FileSyncer.AndroidApp.Activities
             if (Guid.TryParse(Intent.GetStringExtra(Constants.Keys.ProfileId), out var profileId))
             {
                 this.profileId = profileId;
+                
 
-                if (SyncerService.Instance.Peer.Settings.Profiles.TryGetValue(profileId, out var profile))
+                if (SyncerService.Instance.Peer.Profiles.GetProfile(profileId, out var profile))
                 {
                     editName.Text = profile.Name;
                     editName.SetSelection(editName.Text.Length);
 
-                    editDirectory.Text = profile.RootDirectory;
-                    editDirectory.SetSelection(editDirectory.Text.Length);
+                    selectedUri = Uri.Parse(profile.RootDirectory);
+                    if (selectedUri != null)
+                    {
+                        try
+                        {
+                            var rootTree = DocumentFile.FromTreeUri(this, selectedUri);
+                            editDirectory.Text = rootTree.Name;
+                            editDirectory.SetSelection(editDirectory.Text.Length);
+                        }
+                        catch (Exception)
+                        {
+                            OnError(Resource.String.error_profile_details_root_uri);
+                        }
+                    }
+                    else OnError(Resource.String.error_profile_details_root_uri);
 
                     cbAllowSend.Checked = profile.AllowSend;
                     cbAllowReceive.Checked = profile.AllowReceive;
@@ -52,25 +68,33 @@ namespace Arise.FileSyncer.AndroidApp.Activities
 
         protected override void OnEditDone()
         {
-            if (!SyncerService.Instance.Peer.Settings.Profiles.TryGetValue(profileId, out var oldProfile))
+            if (!SyncerService.Instance.Peer.Profiles.GetProfile(profileId, out var oldProfile))
             {
                 OnError(Resource.String.error_profile_details_retrive);
                 return;
             }
 
-            SyncProfile profile = new SyncProfile.Creator(oldProfile)
+            if (selectedUri == null)
+            {
+                OnError(Resource.String.error_profile_details_root_uri);
+                return;
+            }
+
+            var profile = new SyncProfile(oldProfile)
             {
                 Name = editName.Text,
-                RootDirectory = PathHelper.GetCorrect(editDirectory.Text, true),
+                RootDirectory = selectedUri.ToString(),
                 AllowSend = cbAllowSend.Checked,
                 AllowReceive = cbAllowReceive.Checked,
                 AllowDelete = cbAllowReceive.Checked && cbAllowDelete.Checked,
             };
 
-            if (SyncerService.Instance.Peer.UpdateProfile(profileId, profile))
+            if (SyncerService.Instance.Peer.Profiles.UpdateProfile(profileId, profile))
             {
-                if (selectedUri != null)
+                if (selectedUri.ToString() != AppPrefs.GetUri(this, profileId.ToString())?.ToString())
                 {
+                    Android.Util.Log.Info(Constants.TAG, "Profile root URI updated");
+
                     // Remove old URI permissions
                     UriHelper.RemoveUriWithPermissions(this, profileId);
 

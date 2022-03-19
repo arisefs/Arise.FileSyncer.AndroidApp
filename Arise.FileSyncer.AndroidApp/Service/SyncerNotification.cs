@@ -1,100 +1,107 @@
+using System;
 using Android.App;
 using Android.Content;
 using Android.OS;
+using AndroidX.Core.App;
 using Arise.FileSyncer.Common;
 using Arise.FileSyncer.Core;
 
 namespace Arise.FileSyncer.AndroidApp.Service
 {
-    internal class SyncerNotification
+    internal static class SyncerNotification
     {
-        private const string channelId = "syncer_notification";
-        private const string channelName = "Syncer Notification Channel";
-        private const string wakelockTag = "syncer_wakelock";
+        public const string ChannelId = "sync_notify_id";
+        public const int Id = 1;
 
-        private const int syncNotifyId = 0;
+        private const int Timeout = 10000;
+        private const int ProgressMax = 100;
+        private const int ByteDivider = 1000;
 
-        private readonly Context context;
-        private readonly NotificationManager notificationManager;
-        private readonly PowerManager.WakeLock wakeLock;
-
-        public SyncerNotification(Context context)
+        public static void CreateChannel(Context context)
         {
-            this.context = context;
-            notificationManager = context.GetSystemService(Context.NotificationService) as NotificationManager;
-
-            // Get wake lock
-            PowerManager powerManager = context.GetSystemService(Context.PowerService) as PowerManager;
-            if (powerManager == null) Log.Error("Failed to get PowerManager");
-            wakeLock = powerManager.NewWakeLock(WakeLockFlags.Partial, wakelockTag);
-
-            // Create channel
-            if (Build.VERSION.SdkInt >= BuildVersionCodes.O)
+            if (OperatingSystem.IsAndroidVersionAtLeast(26))
             {
-                var channel = new NotificationChannel(channelId, channelName, NotificationImportance.Low);
+                string channelName = context.Resources.GetString(Resource.String.notification_channel_name);
+                string channelDescription = context.Resources.GetString(Resource.String.notification_channel_description);
+
+                var channel = new NotificationChannel(ChannelId, channelName, NotificationImportance.Low)
+                {
+                    Description = channelDescription
+                };
+
+                var notificationManager = context.GetSystemService(Context.NotificationService) as NotificationManager;
                 notificationManager.CreateNotificationChannel(channel);
             }
         }
 
-        public void Show(ProgressStatus progress)
+        public static Notification Create(Context context, ProgressStatus progress)
         {
-            Notification.Builder notificationBuilder;
+            int progressCurrent = progress.Indeterminate ? 0 : (int)(progress.GetPercent() * ProgressMax);
 
-            if (Build.VERSION.SdkInt >= BuildVersionCodes.O)
+            // Create an explicit intent for an Activity in your app
+            var intent = new Intent(context, typeof(Activities.SplashActivity));
+            intent.SetFlags(ActivityFlags.NewTask);
+
+            Notification notification = new NotificationCompat.Builder(context, ChannelId)
+                .SetSmallIcon(Resource.Drawable.baseline_sync_24)
+                .SetContentTitle(context.Resources.GetString(Resource.String.notification_title))
+                .SetContentText(ContentText(context, progress))
+                .SetCategory(NotificationCompat.CategoryProgress)
+                .SetPriority(NotificationCompat.PriorityLow)
+                .SetVisibility(NotificationCompat.VisibilityPublic)
+                .SetProgress(ProgressMax, progressCurrent, progress.Indeterminate)
+                .SetOngoing(true)
+                .SetTimeoutAfter(Timeout)
+                .SetContentIntent(PendingIntent.GetActivity(context, 0, intent, 0))
+                .Build();
+
+            return notification;
+        }
+
+        public static void Notify(Context context, Notification notification)
+        {
+            var notificationManager = NotificationManagerCompat.From(context);
+            notificationManager.Notify(Id, notification);
+        }
+
+        public static void Clear(Context context)
+        {
+            var notificationManager = NotificationManagerCompat.From(context);
+            notificationManager.Cancel(Id);
+        }
+
+        private static string ContentText(Context context, ProgressStatus progress)
+        {
+            string speedText = SpeedText(progress.Speed);
+            string timeText = TimeText(context, progress);
+
+            try
             {
-                notificationBuilder = new Notification.Builder(context, channelId);
+                string rawNotificationText = context.Resources.GetString(Resource.String.notification_text);
+                return string.Format(rawNotificationText, speedText, timeText);
             }
-            else
+            catch (Exception ex)
             {
-                // Pre-Oreo
-#pragma warning disable 0618
-                notificationBuilder = new Notification.Builder(context);
-#pragma warning restore 0618
+                Android.Util.Log.Error(Constants.TAG, $"SyncerNotification: ContentText format error: {ex}");
+                return "";
             }
+        }
 
-            // Speed text calc
-            (var speedNum, var speedLevel) = DividerCounter(progress.Speed, 1000);
-            string speedText = $"{speedNum.ToString("### ##0.0")} {SpeedLevel(speedLevel)}/s";
+        private static string SpeedText(double speed)
+        {
+            (var speedNum, var speedLevel) = DividerCounter(speed, ByteDivider);
+            return $"{speedNum:### ##0.0} {SpeedLevel(speedLevel)}/s";
+        }
 
-            // Time text calc
-            string timeText;
+        private static string TimeText(Context context, ProgressStatus progress)
+        {
             if (progress.Speed > 0)
             {
                 string rawTimeText = context.Resources.GetString(Resource.String.notification_time);
                 (var timeNum, var timeLevel) = DividerCounter((progress.Maximum - progress.Current) / progress.Speed, 60);
-                timeText = string.Format(rawTimeText, $"{timeNum.ToString("0")} {context.Resources.GetString(TimeLevel(timeLevel))}");
+                return string.Format(rawTimeText, $"{timeNum:0} {context.Resources.GetString(TimeLevel(timeLevel))}");
             }
-            else timeText = "-";
-
-            // Notification text
-            string rawNotificationText = context.Resources.GetString(Resource.String.notification_text);
-            string notificationText = string.Format(rawNotificationText, speedText, timeText);
-
-            // Build notification
-            notificationBuilder
-                .SetSmallIcon(Resource.Drawable.baseline_sync_24)
-                .SetContentTitle(context.Resources.GetString(Resource.String.notification_title))
-                .SetContentText(notificationText)
-                .SetCategory(Notification.CategoryProgress)
-                .SetProgress(100, (int)(progress.Indeterminate ? 0 : progress.GetPercent() * 100), progress.Indeterminate)
-                .SetOngoing(true);
-
-            if (Build.VERSION.SdkInt >= BuildVersionCodes.O)
-            {
-                notificationBuilder.SetTimeoutAfter(5000);
-            }
-
-            Notification notification = notificationBuilder.Build();
-            notification.Priority = (int)NotificationPriority.Low;
-
-            notificationManager.Notify(syncNotifyId, notification);
-            if (!wakeLock.IsHeld) wakeLock.Acquire();
-        }
-
-        public void Clear()
-        {
-            notificationManager.Cancel(syncNotifyId);
-            if (wakeLock.IsHeld) wakeLock.Release();
+            else return "-";
         }
 
         private static (double, int) DividerCounter(double number, double divider)
@@ -112,25 +119,25 @@ namespace Arise.FileSyncer.AndroidApp.Service
 
         private static string SpeedLevel(int level)
         {
-            switch (level)
+            return level switch
             {
-                case 0: return "B";
-                case 1: return "KB";
-                case 2: return "MB";
-                case 3: return "GB";
-                case 4: return "TB";
-                default: return "PB";
-            }
+                0 => "B",
+                1 => "KB",
+                2 => "MB",
+                3 => "GB",
+                4 => "TB",
+                _ => "PB",
+            };
         }
 
         private static int TimeLevel(int level)
         {
-            switch (level)
+            return level switch
             {
-                case 0: return Resource.String.unit_time_seconds;
-                case 1: return Resource.String.unit_time_minutes;
-                default: return Resource.String.unit_time_hours;
-            }
+                0 => Resource.String.unit_time_seconds,
+                1 => Resource.String.unit_time_minutes,
+                _ => Resource.String.unit_time_hours,
+            };
         }
     }
 }

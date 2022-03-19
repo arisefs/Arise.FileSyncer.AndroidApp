@@ -1,0 +1,9 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<resources>
+  <color name="primary_text">@color/text_light_primary</color>
+  <color name="secondary_text">@color/text_light_secondary</color>
+  <color name="divider">#42FFFFFF</color>
+  <color name="appbar">@color/primary</color>
+  <color name="icon">@color/icon_light</color>
+  <color name="icon_inactive">@color/icon_light_inactive</color>
+</resources>
