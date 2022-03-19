@@ -191,7 +191,7 @@ namespace Arise.FileSyncer.AndroidApp.Service
                     fsItems.Add(new FileSystemItem(true, docRelativePath, 0, new DateTime()));
                     GetDocumentInfoRecursive(document, docRelativePath, skipHidden, ref fsItems);
                 }
-                else
+                else // if (document.IsFile) // Removed to increase performance
                 {
                     DateTime docLastModified = TimeStampToDateTime(document.LastModified());
                     fsItems.Add(new FileSystemItem(false, docRelativePath, document.Length(), docLastModified));
