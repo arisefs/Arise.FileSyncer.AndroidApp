@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    android:versionCode="1647560425"
-    android:versionName="2.0.1"
+    android:versionCode="1647560426"
+    android:versionName="2.0.2"
     package="com.icsanyi96.arisefilesyncer">
 
   <uses-sdk android:minSdkVersion="23" android:targetSdkVersion="32" />
