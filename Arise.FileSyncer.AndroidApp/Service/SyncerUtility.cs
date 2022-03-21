@@ -1,6 +1,8 @@
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
+using System.Threading.Tasks;
 using Android.App;
 using Android.Provider;
 using AndroidX.DocumentFile.Provider;
@@ -160,11 +162,11 @@ namespace Arise.FileSyncer.AndroidApp.Service
                 return null;
             }
 
-            List<FileSystemItem> fsItems = new();
+            ParallelGetDocumentInfo gen = new(skipHidden);
 
             try
             {
-                GetDocumentInfoRecursive(rootTree, "", skipHidden, ref fsItems);
+                gen.Execute(rootTree);
             }
             catch (Exception ex)
             {
@@ -172,38 +174,59 @@ namespace Arise.FileSyncer.AndroidApp.Service
                 return null;
             }
 
-            return fsItems.ToArray();
+            return gen.GetItems();
         }
 
-        private static void GetDocumentInfoRecursive(DocumentFile root, string relativePath, bool skipHidden, ref List<FileSystemItem> fsItems)
+        class ParallelGetDocumentInfo
         {
-            foreach (DocumentFile document in root.ListFiles())
+            private readonly ConcurrentBag<FileSystemItem> fsItems = new();
+            private readonly bool skipHidden;
+
+            public ParallelGetDocumentInfo(bool skipHidden)
             {
-                string docName = document.Name;
-
-                if (docName.EndsWith(".synctmp", StringComparison.Ordinal)) continue;
-                if (skipHidden && docName.StartsWith('.')) continue;
-
-                string docRelativePath = Path.Combine(relativePath, docName);
-
-                if (document.IsDirectory)
-                {
-                    fsItems.Add(new FileSystemItem(true, docRelativePath, 0, new DateTime()));
-                    GetDocumentInfoRecursive(document, docRelativePath, skipHidden, ref fsItems);
-                }
-                else // if (document.IsFile) // Removed to increase performance
-                {
-                    DateTime docLastModified = TimeStampToDateTime(document.LastModified());
-                    fsItems.Add(new FileSystemItem(false, docRelativePath, document.Length(), docLastModified));
-                }
+                this.skipHidden = skipHidden;
             }
-        }
 
-        private static DateTime TimeStampToDateTime(long timeStamp)
-        {
-            var dateTime = new DateTime(1970, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc);
-            dateTime = dateTime.AddMilliseconds(timeStamp);
-            return dateTime.ToLocalTime();
+            public void Execute(DocumentFile rootTree)
+            {
+                GetDocumentInfoRecursive(rootTree, "");
+            }
+
+            public FileSystemItem[] GetItems()
+            {
+                return fsItems.ToArray();
+            }
+
+            private void GetDocumentInfoRecursive(DocumentFile root, string relativePath)
+            {
+                Parallel.ForEach(root.ListFiles(), document =>
+                {
+                    string docName = document.Name;
+
+                    if (docName.EndsWith(".synctmp", StringComparison.Ordinal)) return;
+                    if (skipHidden && docName.StartsWith('.')) return;
+
+                    string docRelativePath = Path.Combine(relativePath, docName);
+
+                    if (document.IsDirectory)
+                    {
+                        fsItems.Add(new FileSystemItem(true, docRelativePath, 0, new DateTime()));
+                        GetDocumentInfoRecursive(document, docRelativePath);
+                    }
+                    else // if (document.IsFile) // Removed to increase performance
+                    {
+                        DateTime docLastModified = TimeStampToDateTime(document.LastModified());
+                        fsItems.Add(new FileSystemItem(false, docRelativePath, document.Length(), docLastModified));
+                    }
+                });
+            }
+
+            private static DateTime TimeStampToDateTime(long timeStamp)
+            {
+                var dateTime = new DateTime(1970, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc);
+                dateTime = dateTime.AddMilliseconds(timeStamp);
+                return dateTime.ToLocalTime();
+            }
         }
     }
 }

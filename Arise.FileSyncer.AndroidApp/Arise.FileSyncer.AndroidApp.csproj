@@ -4,12 +4,11 @@
     <TargetFramework>net6.0-android</TargetFramework>
     <TargetPlatformVersion>32.0</TargetPlatformVersion>
     <SupportedOSPlatformVersion>23.0</SupportedOSPlatformVersion>
-    <WarningsAsErrors>$(WarningsAsErrors);CA1307;CA1309;CA1310</WarningsAsErrors>
     <OutputType>Exe</OutputType>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Arise.FileSyncer.Common" Version="3.1.0" />
+    <PackageReference Include="Arise.FileSyncer.Common" Version="3.2.1" />
     <PackageReference Include="Xamarin.AndroidX.Work.Runtime" Version="2.7.1.2" />
     <PackageReference Include="Xamarin.Google.Android.Material" Version="1.5.0.1" />
   </ItemGroup>
