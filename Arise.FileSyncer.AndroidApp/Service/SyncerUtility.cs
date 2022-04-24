@@ -177,6 +177,28 @@ namespace Arise.FileSyncer.AndroidApp.Service
             return gen.GetItems();
         }
 
+        public static (long, DateTime, DateTime)? FileInfoAndroid(string rootPath, string relativePath)
+        {
+            try
+            {
+                DocumentFile file = FileUtility.GetDocumentFile(rootPath, relativePath, false, false);
+                if (file != null && file.Exists())
+                {
+                    long size = file.Length();
+                    DateTime lwt = TimeStampToDateTime(file.LastModified());
+                    // Creation date is not available so it just uses last modified time as that
+                    return (size, lwt, lwt);
+                }
+                else Log.Warning($"{nameof(FileInfoAndroid)}: file does not exists: {relativePath}");
+            }
+            catch (Exception ex)
+            {
+                Log.Warning($"{nameof(FileInfoAndroid)}: exception when retrieving file info. {ex.Message}");
+            }
+
+            return null;
+        }
+
         class ParallelGetDocumentInfo
         {
             private readonly ConcurrentBag<FileSystemItem> fsItems = new();
@@ -220,13 +242,13 @@ namespace Arise.FileSyncer.AndroidApp.Service
                     }
                 });
             }
+        }
 
-            private static DateTime TimeStampToDateTime(long timeStamp)
-            {
-                var dateTime = new DateTime(1970, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc);
-                dateTime = dateTime.AddMilliseconds(timeStamp);
-                return dateTime.ToLocalTime();
-            }
+        private static DateTime TimeStampToDateTime(long timeStamp)
+        {
+            var dateTime = new DateTime(1970, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc);
+            dateTime = dateTime.AddMilliseconds(timeStamp);
+            return dateTime.ToUniversalTime();
         }
     }
 }

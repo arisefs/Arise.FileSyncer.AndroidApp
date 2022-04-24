@@ -157,6 +157,7 @@ namespace Arise.FileSyncer.AndroidApp.Service
             Utility.DirectoryCreate = SyncerUtility.DirectoryCreate;
             Utility.DirectoryDelete = SyncerUtility.DirectoryDelete;
             Utility.GenerateTree = SyncerUtility.GenerateTreeAndroid;
+            Utility.FileInfo = SyncerUtility.FileInfoAndroid;
 
             // Disable FileSetTime since its not supported
             Utility.FileSetTime = (_, _, _, _) => false;
