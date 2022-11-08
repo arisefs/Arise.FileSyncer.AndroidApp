@@ -1,3 +1,9 @@
+using System;
+using System.Net;
+using System.Net.Sockets;
+using System.Threading;
+using System.Threading.Tasks;
+using Android.App;
 using Android.Content;
 using Android.Media;
 using Android.OS;
@@ -7,20 +13,11 @@ using Arise.FileSyncer.Core;
 using Arise.FileSyncer.Core.FileSync;
 using Arise.FileSyncer.Core.Peer;
 using Java.Net;
-using System.Net.Sockets;
-using System.Net;
-using Android.App;
-using System;
-using System.Threading.Tasks;
-using System.Threading;
-using System.Collections.Generic;
 
 namespace Arise.FileSyncer.AndroidApp.Service
 {
     internal class SyncerService : IDisposable
     {
-        private const string TAG = "SyncerService";
-
         private static readonly Lazy<SyncerService> instance = new(() => new SyncerService(Application.Context), true);
         public static SyncerService Instance => instance.Value;
 
@@ -129,21 +126,7 @@ namespace Arise.FileSyncer.AndroidApp.Service
 
         private void SetupOSMethods()
         {
-            Log.Error = (message) =>
-            {
-                //var properties = new Dictionary<string, string>
-                //{
-                //    { "Message", message }
-                //};
-                //Analytics.TrackEvent("Internal Error", properties);
-                Android.Util.Log.Error(Constants.TAG, $"{TAG}: {message}");
-            };
-
-            // Setup Log
-            Log.Warning = (message) => Android.Util.Log.Warn(Constants.TAG, $"{TAG}: {message}");
-            Log.Info = (message) => Android.Util.Log.Info(Constants.TAG, $"{TAG}: {message}");
-            Log.Verbose = (message) => Android.Util.Log.Verbose(Constants.TAG, $"{TAG}: {message}");
-            Log.Debug = (message) => Android.Util.Log.Debug(Constants.TAG, $"{TAG}: {message}");
+            Log.SetLogger(new AndroidLogger());
 
             // Setup config folder access
             Common.Config.GetConfigFolderPath = () => context.FilesDir.AbsolutePath;

@@ -7,7 +7,6 @@ using Android.Widget;
 using Arise.FileSyncer.AndroidApp.Helpers;
 using Arise.FileSyncer.AndroidApp.Service;
 using Arise.FileSyncer.Core;
-using Arise.FileSyncer.Core.Helpers;
 
 namespace Arise.FileSyncer.AndroidApp.Activities
 {
@@ -104,11 +103,11 @@ namespace Arise.FileSyncer.AndroidApp.Activities
             public Args(ProfileReceivedEventArgs args)
             {
                 RemoteId = args.RemoteId;
-                Id = args.Id;
-                Key = args.Key;
-                Name = args.Name;
-                CreationDate = args.CreationDate;
-                SkipHidden = args.SkipHidden;
+                Id = args.ProfileShare.Id;
+                Key = args.ProfileShare.Key;
+                Name = args.ProfileShare.Name;
+                CreationDate = args.ProfileShare.CreationDate;
+                SkipHidden = args.ProfileShare.SkipHidden;
             }
 
             public static Args FromJson(string json)

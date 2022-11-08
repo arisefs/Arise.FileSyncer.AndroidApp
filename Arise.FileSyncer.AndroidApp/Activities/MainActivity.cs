@@ -8,7 +8,6 @@ using AndroidX.AppCompat.App;
 using AndroidX.Core.View;
 using AndroidX.DrawerLayout.Widget;
 using AndroidX.Fragment.App;
-using AndroidX.Work;
 using Arise.FileSyncer.AndroidApp.Fragments;
 using Arise.FileSyncer.AndroidApp.Modules;
 using Arise.FileSyncer.AndroidApp.Service;

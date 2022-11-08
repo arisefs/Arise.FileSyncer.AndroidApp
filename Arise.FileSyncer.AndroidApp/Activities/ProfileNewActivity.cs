@@ -4,7 +4,6 @@ using Android.Widget;
 using Arise.FileSyncer.AndroidApp.Helpers;
 using Arise.FileSyncer.AndroidApp.Service;
 using Arise.FileSyncer.Core;
-using Arise.FileSyncer.Core.Helpers;
 
 namespace Arise.FileSyncer.AndroidApp.Activities
 {

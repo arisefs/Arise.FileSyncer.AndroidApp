@@ -1,10 +1,8 @@
 using System;
 using System.Collections.Concurrent;
-using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
 using Android.App;
-using Android.Provider;
 using AndroidX.DocumentFile.Provider;
 using Arise.FileSyncer.AndroidApp.Helpers;
 using Arise.FileSyncer.Core.FileSync;

@@ -22,16 +22,14 @@ namespace Arise.FileSyncer.AndroidApp.Service
             Android.Util.Log.Info(Constants.TAG, $"{nameof(SyncerForegroundService)}: Started");
             OnProgressUpdate(this, new ProgressStatus());
 
-            if (syncTask == null)
+            syncTask ??= Task.Run(() =>
             {
-                syncTask = Task.Run(() => {
-                    SyncerService.Instance.ProgressUpdate += OnProgressUpdate;
-                    SyncerService.Instance.Run();
-                    SyncerService.Instance.ProgressUpdate -= OnProgressUpdate;
-                    syncTask = null;
-                    StopSelf();
-                });
-            }
+                SyncerService.Instance.ProgressUpdate += OnProgressUpdate;
+                SyncerService.Instance.Run();
+                SyncerService.Instance.ProgressUpdate -= OnProgressUpdate;
+                syncTask = null;
+                StopSelf();
+            });
 
             return StartCommandResult.NotSticky;
         }
@@ -39,7 +37,7 @@ namespace Arise.FileSyncer.AndroidApp.Service
         private void OnProgressUpdate(object sender, ProgressStatus e)
         {
             var notification = SyncerNotification.Create(this, e);
-            
+
             if (OperatingSystem.IsAndroidVersionAtLeast(29))
                 StartForeground(SyncerNotification.Id, notification, ForegroundService.TypeDataSync);
             else StartForeground(SyncerNotification.Id, notification);

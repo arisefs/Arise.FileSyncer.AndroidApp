@@ -1,5 +1,4 @@
 ﻿using Android.Content;
-using Android.Net;
 using Uri = Android.Net.Uri;
 
 namespace Arise.FileSyncer.AndroidApp

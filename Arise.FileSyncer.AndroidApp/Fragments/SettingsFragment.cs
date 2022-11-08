@@ -191,7 +191,8 @@ namespace Arise.FileSyncer.AndroidApp.Fragments
 
         private static void SaveConfig()
         {
-            Task.Run(() => {
+            Task.Run(() =>
+            {
                 var syncer = SyncerService.Instance;
                 syncer.Config.Save(syncer.Peer);
             });

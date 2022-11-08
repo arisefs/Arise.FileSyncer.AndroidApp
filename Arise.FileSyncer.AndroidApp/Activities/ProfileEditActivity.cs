@@ -7,7 +7,6 @@ using AndroidX.DocumentFile.Provider;
 using Arise.FileSyncer.AndroidApp.Helpers;
 using Arise.FileSyncer.AndroidApp.Service;
 using Arise.FileSyncer.Core;
-using Arise.FileSyncer.Core.Helpers;
 using Uri = Android.Net.Uri;
 
 namespace Arise.FileSyncer.AndroidApp.Activities
@@ -25,7 +24,7 @@ namespace Arise.FileSyncer.AndroidApp.Activities
             if (Guid.TryParse(Intent.GetStringExtra(Constants.Keys.ProfileId), out var profileId))
             {
                 this.profileId = profileId;
-                
+
 
                 if (SyncerService.Instance.Peer.Profiles.GetProfile(profileId, out var profile))
                 {

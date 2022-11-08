@@ -1,17 +1,17 @@
+using System;
 using Android.App;
 using Android.Content;
 using Android.OS;
 using Android.Provider;
+using Android.Text;
 using Android.Views;
 using Android.Widget;
-using Android.Text;
 using AndroidX.AppCompat.App;
 using AndroidX.DocumentFile.Provider;
+using Google.Android.Material.AppBar;
 using Google.Android.Material.Snackbar;
 using Google.Android.Material.TextField;
-using Google.Android.Material.AppBar;
 using Uri = Android.Net.Uri;
-using System;
 
 namespace Arise.FileSyncer.AndroidApp.Activities
 {

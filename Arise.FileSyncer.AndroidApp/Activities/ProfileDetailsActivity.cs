@@ -8,11 +8,9 @@ using AndroidX.AppCompat.App;
 using Arise.FileSyncer.AndroidApp.Helpers;
 using Arise.FileSyncer.AndroidApp.Service;
 using Arise.FileSyncer.Core;
-using Google.Android.Material.Snackbar;
 using Google.Android.Material.AppBar;
-using AndroidX.DocumentFile.Provider;
+using Google.Android.Material.Snackbar;
 using AlertDialog = AndroidX.AppCompat.App.AlertDialog;
-using Uri = Android.Net.Uri;
 
 namespace Arise.FileSyncer.AndroidApp.Activities
 {
@@ -160,7 +158,8 @@ namespace Arise.FileSyncer.AndroidApp.Activities
                     // Show URI permission error box
                     var errorBox = LayoutInflater.Inflate(Resource.Layout.error_profile_uri, layout, false);
                     var fixButton = errorBox.FindViewById<Button>(Resource.Id.btn_fix);
-                    fixButton.Click += (s, e) => {
+                    fixButton.Click += (s, e) =>
+                    {
                         /*
                         Intent directorySelectIntent = new Intent(Intent.ActionOpenDocumentTree);
                         directorySelectIntent.SetFlags(
