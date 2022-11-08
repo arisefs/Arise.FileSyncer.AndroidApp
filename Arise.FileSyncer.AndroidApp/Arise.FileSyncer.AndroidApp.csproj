@@ -1,14 +1,14 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net6.0-android</TargetFramework>
-    <TargetPlatformVersion>32.0</TargetPlatformVersion>
+    <TargetFramework>net7.0-android</TargetFramework>
+    <TargetPlatformVersion>33.0</TargetPlatformVersion>
     <SupportedOSPlatformVersion>23.0</SupportedOSPlatformVersion>
     <OutputType>Exe</OutputType>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Arise.FileSyncer.Common" Version="3.5.0" />
+    <PackageReference Include="Arise.FileSyncer.Common" Version="3.6.0" />
     <PackageReference Include="Xamarin.AndroidX.Work.Runtime" Version="2.7.1.5" />
     <PackageReference Include="Xamarin.Google.Android.Material" Version="1.7.0.1" />
   </ItemGroup>
