@@ -5,6 +5,14 @@
     <TargetPlatformVersion>33.0</TargetPlatformVersion>
     <SupportedOSPlatformVersion>23.0</SupportedOSPlatformVersion>
     <OutputType>Exe</OutputType>
+    <PublishRelease>true</PublishRelease>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)'=='Release'">
+    <AndroidLinkTool>r8</AndroidLinkTool>
+    <AndroidEnableProfiledAot>false</AndroidEnableProfiledAot>
+    <RunAOTCompilation>true</RunAOTCompilation>
+    <TrimMode>link</TrimMode>
   </PropertyGroup>
 
   <ItemGroup>
