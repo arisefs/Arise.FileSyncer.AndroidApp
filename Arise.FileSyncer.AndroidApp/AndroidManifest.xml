@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    android:versionCode="1647560432"
-    android:versionName="2.1.1"
+    android:versionCode="1647561432"
+    android:versionName="2.1.2"
     package="com.icsanyi96.arisefilesyncer">
 
-  <uses-sdk android:minSdkVersion="23" android:targetSdkVersion="33" />
+  <uses-sdk android:minSdkVersion="26" android:targetSdkVersion="34" />
 
   <uses-permission android:name="android.permission.INTERNET" />
   <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
