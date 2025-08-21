@@ -262,3 +262,5 @@ __pycache__/
 
 # Xamarin generated file
 Arise.FileSyncer.AndroidApp/Resources/Resource.designer.cs
+
+/apks
