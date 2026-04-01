@@ -32,6 +32,7 @@ jobs:
     - name: Build
       run: >
         dotnet build
+        Arise.FileSyncer.AndroidApp/Arise.FileSyncer.AndroidApp.csproj
         -t:InstallAndroidDependencies
         -p:AcceptAndroidSdkLicenses=True
       
@@ -40,10 +41,11 @@ jobs:
         KEY_PASS: ${{ secrets.KEY_PASS }}
       run: >
         dotnet publish
+        Arise.FileSyncer.AndroidApp/Arise.FileSyncer.AndroidApp.csproj
         -o ./apks
         -c Release
         -p:AndroidKeyStore=True
-        -p:AndroidSigningKeyStore="arise"
+        -p:AndroidSigningKeyStore="./arise"
         -p:AndroidSigningStorePass="$KEY_PASS"
         -p:AndroidSigningKeyAlias="arise"
         -p:AndroidSigningKeyPass="$KEY_PASS"
