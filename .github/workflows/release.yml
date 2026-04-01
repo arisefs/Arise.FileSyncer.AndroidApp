@@ -45,7 +45,7 @@ jobs:
         -o ./apks
         -c Release
         -p:AndroidKeyStore=True
-        -p:AndroidSigningKeyStore="/home/runner/work/Arise.FileSyncer.AndroidApp/Arise.FileSyncer.AndroidApp/arise"
+        -p:AndroidSigningKeyStore="$PWD/arise"
         -p:AndroidSigningStorePass="$KEY_PASS"
         -p:AndroidSigningKeyAlias="arise"
         -p:AndroidSigningKeyPass="$KEY_PASS"
